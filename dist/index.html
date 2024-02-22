@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscibe</title>
+    <link rel="stylesheet" href="style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://unpkg.com/simplebar@5.3.0/dist/simplebar.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+</head>
+
+<body>
+    <header id="mainHeader">
+        <div class="logo" id="logo-image">
+            <img class="logo-image" src="../public/info.png" alt="LOGO">
+            Inscribe
+        </div>
+
+        <div class="menu">
+            <ul class="menu-list">
+                <div class="spinner" id="loader">
+                    <div class="spinner-blade"></div>
+                    <div class="spinner-blade"></div>
+                    <div class="spinner-blade"></div>
+                    <div class="spinner-blade"></div>
+                    <div class="spinner-blade"></div>
+                    <div class="spinner-blade"></div>
+                    <div class="spinner-blade"></div>
+                    <div class="spinner-blade"></div>
+                    <div class="spinner-blade"></div>
+                    <div class="spinner-blade"></div>
+                    <div class="spinner-blade"></div>
+                    <div class="spinner-blade"></div>
+                </div>
+                <div id="auth-links" class="auth-links">
+
+                    <button id="loginButton1" class="classy-lightBtn" onclick="Clerk.openSignIn()">Log in</button>
+                    <button id="loginButton2" class="button" onclick="Clerk.openSignIn()" style="margin: 10px">Get
+                        Inscribe Free</button>
+                </div>
+                <a href="main.html"><button class="classy-enterBtn" id="enter1">Enter Inscribe</button></a>
+                <div id="user-button" class="user-button"></div>
+
+
+                <div class="light-dark-tab">
+                    <div class="select" id="selectTheme">
+                        <span class="selected" id="selected"><i class="bx bx-sun"></i></span>
+                        <ul class="themes" id="themeList">
+                            <li class="active">Light</li>
+                            <li>Dark</li>
+                            <li>System</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </ul>
+        </div>
+
+    </header>
+
+    <main>
+        <div class="highlighters">
+            <div id="highlighters">
+                <img src="../public/topPeekI.avif" width="150px" alt="Looking Down">
+            </div>
+        </div>
+        <div class="main-container">
+            <p>Streamlined Note Management</p>
+            <p>for Productivity</p>
+            <span
+                style="font-weight: 500; font-size: 25px; width: 550px; text-align: center; margin-top: 20px; margin-bottom: 20px;">Get
+                Inscribe for Free and Elevate Your Productivity with Seamless Note Management</span>
+
+            <div class="spinner center" id="loaderMain">
+                <div class="spinner-blade"></div>
+                <div class="spinner-blade"></div>
+                <div class="spinner-blade"></div>
+                <div class="spinner-blade"></div>
+                <div class="spinner-blade"></div>
+                <div class="spinner-blade"></div>
+                <div class="spinner-blade"></div>
+                <div class="spinner-blade"></div>
+                <div class="spinner-blade"></div>
+                <div class="spinner-blade"></div>
+                <div class="spinner-blade"></div>
+                <div class="spinner-blade"></div>
+            </div>
+
+
+            <div id="mainBtnDiv"><button onclick="Clerk.openSignUp()" class="button" id="mainBtn">Get Inscribe Free<i
+                        class='bx bx-right-arrow-alt'></i></button></div>
+        </div>
+        <div class="main-container-img" id="container-img">
+            <img src="./../public/parade.png" width="600px" alt="documents">
+        </div>
+        <footer>
+            <div class="footer-left" id="footerlogo-image">
+                <img class="logo-image" src="../public/info.png" alt="LOGO">
+                <span class="footer-logo">Inscribe</span>
+            </div>
+            <div class="footer-right">
+                <span class="classy-lightBtn">Privacy Policy</span>
+                <span class="classy-lightBtn">Terms and Conditions</span>
+            </div>
+        </footer>
+    </main>
+    <img src="" alt="">
+    <script src="clerk.js" async crossorigin="anonymous"></script>
+    <script defer src="script.js"></script>
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+    <script src="https://unpkg.com/simplebar@5.3.0/dist/simplebar.min.js"></script>
+</body>
+</html>
