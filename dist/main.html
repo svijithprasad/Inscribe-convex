@@ -232,9 +232,7 @@
 
 
         <div class="note-space" id="note-space">
-          <div class="note-wallpaper" id="note-wallpaper"></div>
-          <div class="note-title"><input type="text" id="note-title"></div>
-          <div id="editor"></div>
+
         </div>
 
 
@@ -263,77 +261,6 @@
     </script>
         <script src="main.js" async crossorigin="anonymous"></script>
         <script>
-          const editor =  new EditorJS({
-        holder: 'editor',
-        autofocus: true,
-        placeholder: 'Start typing here...',
-        inlineToolbar: true,
-        data: {
-        },
-        tools: {
-            header: {
-                class: Header,
-                inlineToolbar: true,
-                config: {
-                    placeholder: "Enter a header",
-                    levels: [2, 3, 4],
-                    defaultLevel: 2
-                }
-            },
-            paragraph: {
-                class: Paragraph,
-                inlineToolbar: true,
-            },
-            list: {
-                class: List,
-                inlineToolbar: true,
-                config: {
-                    ordered: true,
-                    unordered: true,
-                },
-            },
-            table: {
-                class: Table,
-                inlineToolbar: true,
-                config: {
-                    rows: 2,
-                    cols: 3,
-                },
-            },
-            warning: {
-                class: Warning,
-                inlineToolbar: true,
-            },
-            delimiter: Delimiter,
-            inlineCode: InlineCode,
-            checklist: {
-                class: Checklist,
-                inlineToolbar: true,
-            },
-            marker: {
-                class: Marker,
-                inlineToolbar: true,
-            },
-            embed: {
-                class: Embed,
-                config: {
-                    services: {
-                        youtube: true,
-                        vimeo: true,
-                        twitter: true,
-                        instagram: true,
-                    },
-                },
-            },
-        }
-    });
-
-editor.core.save().then((outputData) => {
-  console.log('Article data: ', outputData);
-}).catch((error) => {
-  console.log('Saving failed: ', error);
-});
-
         </script>
   </body>
 </html>

@@ -50,7 +50,7 @@ const startClerk = async () => {
             const isActive = i === 0 ? "active" : "";
 
             sidebarContainer.innerHTML += `
-                <div class='document-title ${isActive}' id="${document._id}">
+                <div class='document-title ${isActive}' data-document-id="${document._id}">
                     <div class="expand"><i class='fa-solid fa-chevron-right fa-xs'></i></div>
                     <div class='title'>${document.title}</div> 
                     <div class='actionItems'>
@@ -76,6 +76,85 @@ const startClerk = async () => {
               title.classList.add("active");
             });
           });
+
+          documentTitles.forEach((title) => {
+            title.addEventListener("click", function () {
+              const documentId = title.dataset.documentId;
+              const notespace = document.getElementById("note-space");
+              const userspace = document.getElementById("user-space");
+              client.query("documents:get", { id: documentId }).then((documents) => {
+                console.log("task:", documents[0]._id);
+                userspace.style.display = "none";
+                notespace.style.display = "block";
+                notespace.innerHTML = "";
+                notespace.innerHTML += `          <div class="note-wallpaper" id="note-wallpaper"></div>
+                <div class="note-title"><input type="text" id="note-title" data-id="${documents[0]._id}"></div>
+                <div id="editor" data-id="${documents[0]._id}"></div>`;
+                const editor = new EditorJS({
+                  holder: "editor",
+                  autofocus: true,
+                  placeholder: "Start typing here...",
+                  tools: {
+                    header: {
+                      class: Header,
+                      inlineToolbar: true,
+                      config: {
+                        placeholder: "Enter a header",
+                        levels: [2, 3, 4],
+                        defaultLevel: 2,
+                      },
+                    },
+                    paragraph: {
+                      class: Paragraph,
+                      inlineToolbar: true,
+                    },
+                    list: {
+                      class: List,
+                      inlineToolbar: true,
+                      config: {
+                        ordered: true,
+                        unordered: true,
+                      },
+                    },
+                    table: {
+                      class: Table,
+                      inlineToolbar: true,
+                      config: {
+                        rows: 2,
+                        cols: 3,
+                      },
+                    },
+                    warning: {
+                      class: Warning,
+                      inlineToolbar: true,
+                    },
+                    delimiter: Delimiter,
+                    inlineCode: InlineCode,
+                    checklist: {
+                      class: Checklist,
+                      inlineToolbar: true,
+                    },
+                    marker: {
+                      class: Marker,
+                      inlineToolbar: true,
+                    },
+                    embed: {
+                      class: Embed,
+                      config: {
+                        services: {
+                          youtube: true,
+                          vimeo: true,
+                          twitter: true,
+                          instagram: true,
+                        },
+                      },
+                    },
+                  },
+                });
+              });
+            });
+        });
+
 
           const deleteDocumentButtons =
             document.querySelectorAll(".delete-document");
@@ -118,7 +197,6 @@ const startClerk = async () => {
       }
     }
 
-
     const openTrash = document.getElementById("openTrash");
     openTrash.addEventListener("click", function (event) {
       const trashBox = document.querySelector(".trashbox");
@@ -139,7 +217,6 @@ const startClerk = async () => {
       event.stopPropagation();
       const userspace = document.getElementById("user-space");
       const notespace = document.getElementById("note-space");
-      notespace.innerHTML = "";
       userspace.style.display = "none";
       notespace.style.display = "block";
 
@@ -151,9 +228,76 @@ const startClerk = async () => {
           userId: userId,
         })
         .then((documents) => {
-          console.log("Inserted task:", documents);
-        });
+          client.query("documents:get", { id: documents }).then((documents) => {
+            console.log("task:", documents[0]._id);
+            notespace.innerHTML = "";
+            notespace.innerHTML += `          <div class="note-wallpaper" id="note-wallpaper"></div>
+            <div class="note-title"><input type="text" id="note-title" data-id="${documents[0]._id}"></div>
+            <div id="editor" data-id="${documents[0]._id}"></div>`;
 
+            const editor = new EditorJS({
+              holder: "editor",
+              autofocus: true,
+              placeholder: "Start typing here...",
+              tools: {
+                header: {
+                  class: Header,
+                  inlineToolbar: true,
+                  config: {
+                    placeholder: "Enter a header",
+                    levels: [2, 3, 4],
+                    defaultLevel: 2,
+                  },
+                },
+                paragraph: {
+                  class: Paragraph,
+                  inlineToolbar: true,
+                },
+                list: {
+                  class: List,
+                  inlineToolbar: true,
+                  config: {
+                    ordered: true,
+                    unordered: true,
+                  },
+                },
+                table: {
+                  class: Table,
+                  inlineToolbar: true,
+                  config: {
+                    rows: 2,
+                    cols: 3,
+                  },
+                },
+                warning: {
+                  class: Warning,
+                  inlineToolbar: true,
+                },
+                delimiter: Delimiter,
+                inlineCode: InlineCode,
+                checklist: {
+                  class: Checklist,
+                  inlineToolbar: true,
+                },
+                marker: {
+                  class: Marker,
+                  inlineToolbar: true,
+                },
+                embed: {
+                  class: Embed,
+                  config: {
+                    services: {
+                      youtube: true,
+                      vimeo: true,
+                      twitter: true,
+                      instagram: true,
+                    },
+                  },
+                },
+              },
+            });
+          });
+        });
     });
   } catch (err) {
     console.error("Error starting Clerk: ", err);

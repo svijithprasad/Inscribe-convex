@@ -2,9 +2,9 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
 export const get = query({
-  args: {},
-  handler: async (ctx) => {
-    const documents = await ctx.db.query("documents").collect();
+  args: {id : v.id("documents")},
+  handler: async (ctx, args) => {
+    const documents = await ctx.db.query("documents").filter((q) => q.eq(q.field("_id"), args.id)).collect();
 
     return documents;
   },
