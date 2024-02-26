@@ -13,75 +13,6 @@ const startClerk = async () => {
     const userButton = document.getElementById("user-button");
     const userNameMain = document.querySelector(".userNameMain");
     if (Clerk.user) {
-      
-      const editor =  new EditorJS({
-        holder: 'editor',
-        autofocus: true,
-        placeholder: 'Start typing here...',
-        inlineToolbar: true,
-        data: {
-          
-        },
-        tools: {
-            header: {
-                class: Header,
-                inlineToolbar: true,
-                config: {
-                    placeholder: "Enter a header",
-                    levels: [2, 3, 4],
-                    defaultLevel: 2
-                }
-            },
-            paragraph: {
-                class: Paragraph,
-                inlineToolbar: true,
-            },
-            list: {
-                class: List,
-                inlineToolbar: true,
-                config: {
-                    ordered: true,
-                    unordered: true,
-                },
-            },
-            table: {
-                class: Table,
-                inlineToolbar: true,
-                config: {
-                    rows: 2,
-                    cols: 3,
-                },
-            },
-            warning: {
-                class: Warning,
-                inlineToolbar: true,
-            },
-            delimiter: Delimiter,
-            inlineCode: InlineCode,
-            checklist: {
-                class: Checklist,
-                inlineToolbar: true,
-            },
-            marker: {
-                class: Marker,
-                inlineToolbar: true,
-            },
-            embed: {
-                class: Embed,
-                config: {
-                    services: {
-                        youtube: true,
-                        vimeo: true,
-                        twitter: true,
-                        instagram: true,
-                    },
-                },
-            },
-        }
-    });
-    
-    
-
       const userName = document.getElementById("userName");
       const profile = Clerk.user.imageUrl;
       userButton.innerHTML = `<img style='border-radius: 50%; width: 25px;
@@ -186,6 +117,7 @@ const startClerk = async () => {
         });
       }
     }
+
 
     const openTrash = document.getElementById("openTrash");
     openTrash.addEventListener("click", function (event) {
