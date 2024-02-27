@@ -705,3 +705,13 @@ aside {
   transition: all 0.2s ease;
 }
 
+.no-document{
+  font-weight: 500;
+  color: #737373;
+  display: flex;
+  align-items: center;
+  min-height: 29px;
+  padding-left: 10px;
+  cursor: pointer;
+  width: 100%;
+}

@@ -2,9 +2,12 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
 export const get = query({
-  args: {id : v.id("documents")},
+  args: { id: v.id("documents") },
   handler: async (ctx, args) => {
-    const documents = await ctx.db.query("documents").filter((q) => q.eq(q.field("_id"), args.id)).collect();
+    const documents = await ctx.db
+      .query("documents")
+      .filter((q) => q.eq(q.field("_id"), args.id))
+      .collect();
 
     return documents;
   },
@@ -56,16 +59,15 @@ export const remove = mutation({
   },
 });
 
-
 export const archive = mutation({
-  args:{
+  args: {
     id: v.id("documents"),
-  }
-  ,handler: async (ctx, args) => {
-    const document = await ctx.db.patch(args.id, {isArchived: true});
+  },
+  handler: async (ctx, args) => {
+    const document = await ctx.db.patch(args.id, { isArchived: true });
     return document;
-  }
-})
+  },
+});
 
 export const getArchived = query({
   args: {
@@ -83,3 +85,28 @@ export const getArchived = query({
     return documents;
   },
 });
+
+export const saveEditor = mutation({
+  args: {
+    id: v.id("documents"),
+    content: v.optional(v.string()),
+    coverImage: v.optional(v.string()),
+    title: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const document = await ctx.db.patch(args.id, {
+      content: args.content,
+    })
+    return document;
+  },
+});
+
+export const getEditor = query({
+  args: {
+    id: v.id("documents"),
+  },
+  handler: async (ctx, args) => {
+    const document = await ctx.db.query("documents").filter(q => q.eq(q.field("_id"), args.id)).collect();
+    return document;
+  }
+})

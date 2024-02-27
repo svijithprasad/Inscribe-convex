@@ -37,20 +37,24 @@ const startClerk = async () => {
         }
       );
 
+      const sidebarContainer = document.getElementById("titles-list");
+      sidebarContainer.innerHTML = `<div class="flex flex-col p-3 gap-2">
+      <div class="skeleton h-4 w-full bg-[#666666] opacity-10"></div>
+      <div class="skeleton h-4 w-full bg-[#666666] opacity-10"></div>
+      <div class="skeleton h-4 w-full bg-[#666666] opacity-10"></div>
+    </div>`;
       client.onUpdate(
         "documents:getSidebar",
         { userId: userId },
         (documents) => {
-          const sidebarContainer = document.getElementById("titles-list");
-
           // Clear existing content
           sidebarContainer.innerHTML = "";
           for (let i = 0; i < documents.length; i++) {
             const document = documents[i];
-            const isActive = i === -1 ? "active" : "";
+            const isActive = i === 0 ? "active" : "";
 
             sidebarContainer.innerHTML += `
-                <div class='document-title ${isActive}' data-document-id="${document._id}">
+                <div class='document-title' data-document-id="${document._id}">
                     <div class="expand"><i class='fa-solid fa-chevron-right fa-xs'></i></div>
                     <div class='title'>${document.title}</div> 
                     <div class='actionItems'>
@@ -60,6 +64,19 @@ const startClerk = async () => {
                 </div>
             `;
           }
+
+          document.addEventListener("DOMContentLoaded", function () {
+            var titlesListDiv = document.getElementById("titles-list");
+            var noDocumentDiv = titlesListDiv.querySelector(".no-document");
+            if (
+              titlesListDiv.children.length === 1 &&
+              titlesListDiv.firstElementChild === noDocumentDiv
+            ) {
+              noDocumentDiv.style.display = "block";
+            } else {
+              noDocumentDiv.style.display = "none";
+            }
+          });
 
           // Select all document titles
           const documentTitles = document.querySelectorAll(".document-title");
@@ -82,79 +99,103 @@ const startClerk = async () => {
               const documentId = title.dataset.documentId;
               const notespace = document.getElementById("note-space");
               const userspace = document.getElementById("user-space");
-              client.query("documents:get", { id: documentId }).then((documents) => {
-                console.log("task:", documents[0]._id);
-                userspace.style.display = "none";
-                notespace.style.display = "block";
-                notespace.innerHTML = "";
-                notespace.innerHTML += `          <div class="note-wallpaper" id="note-wallpaper"></div>
+              notespace.innerHTML = `<div class="flex flex-col p-3 gap-2">
+              <div class="skeleton h-52 w-full bg-[#666666] opacity-10"></div>
+              <div class="flex flex-col w-[800px] ml-[250px] gap-2">
+              <div class="skeleton h-4  bg-[#666666] opacity-10"></div>
+              <div class="skeleton h-4  bg-[#666666] opacity-10"></div>
+              <div class="skeleton h-4  bg-[#666666] opacity-10"></div>
+              </div>
+            </div>`;
+              client
+                .query("documents:get", { id: documentId })
+                .then((documents) => {
+                  console.log("task:", documents[0]._id);
+                  userspace.style.display = "none";
+                  notespace.style.display = "block";
+                  notespace.innerHTML = "";
+                  notespace.innerHTML += `          <div class="note-wallpaper" id="note-wallpaper"></div>
                 <div class="note-title"><input type="text" id="note-title" data-id="${documents[0]._id}"></div>
-                <div id="editor" data-id="${documents[0]._id}"></div>`;
-                const editor = new EditorJS({
-                  holder: "editor",
-                  autofocus: true,
-                  placeholder: "Start typing here...",
-                  tools: {
-                    header: {
-                      class: Header,
-                      inlineToolbar: true,
-                      config: {
-                        placeholder: "Enter a header",
-                        levels: [2, 3, 4],
-                        defaultLevel: 2,
-                      },
-                    },
-                    paragraph: {
-                      class: Paragraph,
-                      inlineToolbar: true,
-                    },
-                    list: {
-                      class: List,
-                      inlineToolbar: true,
-                      config: {
-                        ordered: true,
-                        unordered: true,
-                      },
-                    },
-                    table: {
-                      class: Table,
-                      inlineToolbar: true,
-                      config: {
-                        rows: 2,
-                        cols: 3,
-                      },
-                    },
-                    warning: {
-                      class: Warning,
-                      inlineToolbar: true,
-                    },
-                    delimiter: Delimiter,
-                    inlineCode: InlineCode,
-                    checklist: {
-                      class: Checklist,
-                      inlineToolbar: true,
-                    },
-                    marker: {
-                      class: Marker,
-                      inlineToolbar: true,
-                    },
-                    embed: {
-                      class: Embed,
-                      config: {
-                        services: {
-                          youtube: true,
-                          vimeo: true,
-                          twitter: true,
-                          instagram: true,
-                        },
-                      },
-                    },
-                  },
-                });
-              });
-            });
-        });
+                <div id="editor" data-document-id="${documents[0]._id}"></div>`;
+                  const editorElement = document.getElementById("editor");
+                  const documentId = editorElement.dataset.documentId;
+                  console.log(documentId);
 
+                  client
+                    .query("documents:getEditor", { id: documentId }, {documents}.then((documents) => {
+                      const content = documents[0].content;
+                    }))
+                    .then((content) => {
+                      const content = document[0].content;
+                      console.log(content);
+
+                      // Initialize EditorJS inside the promise callback
+                      const editor = new EditorJS({
+                        holder: "editor",
+                        onChange: () => {
+                          saveEditorData(documentId);
+                        },
+                        tools: {
+                          header: {
+                            class: Header,
+                            inlineToolbars: true,
+                          },
+                          list: {
+                            class: List,
+                          },
+                          embed: {
+                            class: Embed,
+                            config: {
+                              services: {
+                                youtube: true,
+                                coub: true,
+                                vimeo: true,
+                              },
+                            },
+                          },
+                          paragraph: {
+                            class: Paragraph,
+                            inlineToolbars: true,
+                          },
+                          checklist: {
+                            class: Checklist,
+                            inlineToolbars: true,
+                          },
+                          table: {
+                            class: Table,
+                            inlineToolbar: true,
+                            config: {
+                              rows: 3,
+                              cols: 3,
+                            },
+                          },
+                        },
+                        data: content, // Assign the retrieved content to the EditorJS instance
+                      });
+
+                      // Function to save editor data and handle potential errors
+                      function saveEditorData(documentId) {
+                        editor
+                          .save()
+                          .then((data) => {
+                            const content = JSON.stringify(data);
+                            console.log("Saved data:", content);
+                            client.mutation(
+                              "documents:saveEditor",
+                              { id: documentId, content: content },
+                              (documents) => {
+                                console.log("task:", documents);
+                              }
+                            );
+                          })
+                          .catch((error) => {
+                            console.error("Saving failed:", error);
+                          });
+                      }
+                    });
+                });
+            });
+          });
 
           const deleteDocumentButtons =
             document.querySelectorAll(".delete-document");
