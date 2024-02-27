@@ -47,7 +47,7 @@ const startClerk = async () => {
           sidebarContainer.innerHTML = "";
           for (let i = 0; i < documents.length; i++) {
             const document = documents[i];
-            const isActive = i === 0 ? "active" : "";
+            const isActive = i === -1 ? "active" : "";
 
             sidebarContainer.innerHTML += `
                 <div class='document-title ${isActive}' data-document-id="${document._id}">
