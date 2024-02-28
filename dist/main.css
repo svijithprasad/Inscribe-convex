@@ -151,6 +151,8 @@ aside {
   padding-left: 10px;
   cursor: pointer;
   width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .document-title:active{

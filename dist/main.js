@@ -118,7 +118,7 @@ const startClerk = async () => {
                   userspace.style.display = "none";
                   notespace.style.display = "block";
                   notespace.innerHTML = "";
-                  notespace.innerHTML += `
+                  notespace.innerHTML = `
                         <div class="note-wallpaper" id="note-wallpaper"></div>
                         <div class="note-title">
                             <input type="text" id="note-title" data-id="${documents[0]._id}" value="${documents[0].title}">
@@ -130,6 +130,7 @@ const startClerk = async () => {
                     .then((documents) => {
                       const content = documents[0].content;
                       console.log(content);
+                      const parsedContent = content ? JSON.parse(content) : {};
 
                       const editor = new EditorJS({
                         autofocus: true,
@@ -163,7 +164,7 @@ const startClerk = async () => {
                             inlineToolbar: true,
                           },
                         },
-                        data: JSON.parse(content),
+                        data: parsedContent,
                       });
 
                       const titleTextBox =
@@ -291,7 +292,7 @@ const startClerk = async () => {
             console.log("task:", documents[0].title);
             const titleTextBox = document.getElementById("note-title");
             titleTextBox.value = documents[0].title;
-
+            const documentId = titleTextBox.dataset.id;
             titleTextBox.addEventListener("input", function () {
               const documentId = titleTextBox.dataset.id;
               client.mutation("documents:renameTitle", {
@@ -302,6 +303,9 @@ const startClerk = async () => {
             const editor = new EditorJS({
               holder: "editor",
               autofocus: true,
+              onChange: () => {
+                saveEditorData(documentId);
+              },
               placeholder: "Start typing here...",
               tools: {
                 header: {
@@ -360,6 +364,24 @@ const startClerk = async () => {
                 },
               },
             });
+            function saveEditorData(documentId) {
+              editor
+                .save()
+                .then((data) => {
+                  const content = JSON.stringify(data);
+                  console.log("Saved data:", content);
+                  client.mutation(
+                    "documents:saveEditor",
+                    { id: documentId, content: content },
+                    (documents) => {
+                      console.log("task:", documents);
+                    }
+                  );
+                })
+                .catch((error) => {
+                  console.error("Saving failed:", error);
+                });
+            }
           });
         });
     });
