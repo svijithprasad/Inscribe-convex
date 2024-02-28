@@ -130,7 +130,6 @@ const startClerk = async () => {
                     .then((documents) => {
                       const content = documents[0].content;
                       console.log(content);
-                      
 
                       const editor = new EditorJS({
                         autofocus: true,
@@ -289,7 +288,17 @@ const startClerk = async () => {
             notespace.innerHTML += `          <div class="note-wallpaper" id="note-wallpaper"></div>
             <div class="note-title"><input type="text" id="note-title" data-id="${documents[0]._id}"></div>
             <div id="editor" data-id="${documents[0]._id}"></div>`;
+            console.log("task:", documents[0].title);
+            const titleTextBox = document.getElementById("note-title");
+            titleTextBox.value = documents[0].title;
 
+            titleTextBox.addEventListener("input", function () {
+              const documentId = titleTextBox.dataset.id;
+              client.mutation("documents:renameTitle", {
+                id: documentId,
+                title: titleTextBox.value,
+              });
+            });
             const editor = new EditorJS({
               holder: "editor",
               autofocus: true,
