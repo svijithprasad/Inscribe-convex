@@ -733,11 +733,3 @@ aside {
   width: 100%;
 }
 
-.publish{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  top: 2%;
-  right: 4%;
-}

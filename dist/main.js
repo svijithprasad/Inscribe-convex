@@ -102,7 +102,7 @@ const startClerk = async () => {
               const documentId = title.dataset.documentId;
               const notespace = document.getElementById("note-space");
               const userspace = document.getElementById("user-space");
-
+              const publishMenu = document.querySelector(".publish-Menu");
               // Display skeleton loading animation
               notespace.innerHTML = `
                     <div class="flex flex-col p-3 gap-2">
@@ -120,7 +120,16 @@ const startClerk = async () => {
                   console.log("task:", documents[0]._id);
                   userspace.style.display = "none";
                   notespace.style.display = "block";
-                  navTitle.innerHTML = `${documents[0].title}`;
+                  navTitle.innerHTML = documents[0].title;
+                  publishMenu.innerHTML = "";
+                  publishMenu.innerHTML += `
+                <div class="flex items-center fixed right-3 top-2">
+                  <div class="publish">
+                    <div class="btn btn-sm btn-ghost rounded-sm cursor-pointer" >Export <i class="fa-solid fa-globe"></i></div>
+                  </div>
+                  <div class="ml-2 btn btn-ghost btn-sm "><i class="fa-solid fa-ellipsis"></i></div>
+                </div>`;
+
                   notespace.innerHTML = `
                             <div class="note-wallpaper" id="note-wallpaper"></div>
                             <div class="note-title">
@@ -234,18 +243,18 @@ const startClerk = async () => {
         }
       );
 
-          document.addEventListener("click", function (event) {
-            const restoreButton = event.target.closest(".revert");
-            if (restoreButton) {
-              const documentId = restoreButton.dataset.documentId;
-              restoreNote(documentId);
-            }
-          })
+      document.addEventListener("click", function (event) {
+        const restoreButton = event.target.closest(".revert");
+        if (restoreButton) {
+          const documentId = restoreButton.dataset.documentId;
+          restoreNote(documentId);
+        }
+      });
 
       function restoreNote(documentId) {
         client.mutation("documents:restore", { id: documentId }, (document) => {
           console.log("task:", document);
-        })
+        });
       }
       function deleteNote(documentId) {
         client.mutation(
@@ -297,6 +306,8 @@ const startClerk = async () => {
       event.stopPropagation();
       const userspace = document.getElementById("user-space");
       const notespace = document.getElementById("note-space");
+      const publishMenu = document.querySelector(".publish-Menu");
+      const navTitle = document.getElementById("navTitle");
       userspace.style.display = "none";
       notespace.style.display = "block";
 
@@ -310,6 +321,15 @@ const startClerk = async () => {
         .then((documents) => {
           client.query("documents:get", { id: documents }).then((documents) => {
             console.log("task:", documents[0]._id);
+            navTitle.innerHTML = `${documents[0].title}`;
+            publishMenu.innerHTML = "";
+            publishMenu.innerHTML += `
+                <div class="flex items-center fixed right-3 top-2">
+                  <div class="publish">
+                    <div class="btn btn-sm btn-ghost rounded-sm cursor-pointer">Export <i class="fa-solid fa-globe"></i></div>
+                  </div>
+                  <div class="ml-2 btn btn-ghost btn-sm "><i class="fa-solid fa-ellipsis"></i></div>
+                </div>`;
             notespace.innerHTML = "";
             notespace.innerHTML += `          <div class="note-wallpaper" id="note-wallpaper"></div>
             <div class="note-title"><input type="text" id="note-title" data-id="${documents[0]._id}"></div>

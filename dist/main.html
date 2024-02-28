@@ -30,7 +30,7 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/convex@1.3.1/dist/browser.bundle.js"></script>
 
     <!-- EditorJS CSS -->
@@ -57,6 +57,10 @@
       defer
       src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
+
+    <!-- pdf scripts -->
+    <script src="https://cdnjs/cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   </head>
     <div class="mainLoader">
       <div class="spinner" id="loader">
@@ -204,6 +208,22 @@
         </div>
       </div>
       <div class="mainBar">
+        <!-- publish tab  -->
+        <div class="publish-tab border-gray-100 border absolute rounded-sm right-7 top-12 bg-white shadow-xl w-64 h-44 z-[9999] flex flex-col items-center">
+          <div class="p-x-10 pt-5 flex flex-col">
+            <div class=""><i class="fa-solid fa-globe text-3xl"></i></div>
+          </div>
+          <div class="pt-2">
+            <p class="text-center text-muted-foreground text-sm font-semibold">Export this document</p>
+          </div>
+          <div>
+            <p class="text-center pt-2 text-[#737373] text-xs font-semibold">share your work with others</p>
+          </div>
+          <div>
+            <div class="mt-5 btn btn-primary btn-sm" id="publish">Export as <i class="fa-regular fa-file-pdf"></i></div>
+          </div>
+        </div>
+
         <nav>
           <div>
             <div class="menu-icon" onclick="resetAside()">
@@ -211,9 +231,7 @@
             </div>
             <div class="navTitle" id="navTitle"></div>
           </div>
-          <div>
-            <div class="publish w-10 h-4 "><div class="btn btn-sm btn-primary rounded-sm cursor-pointer">Publish <i class="fa-solid fa-globe"></i></div></div>
-          </div>
+          <div class="publish-Menu flex items-center fixed right-3 top-2"></div>
         </nav>
 
         <div class="user-space" id="user-space">
@@ -265,5 +283,6 @@
         <script src="main.js" async crossorigin="anonymous"></script>
         <script>
         </script>
+        <script src="pdf.js"></script>
   </body>
 </html>
