@@ -125,7 +125,7 @@ const startClerk = async () => {
                   publishMenu.innerHTML += `
                 <div class="flex items-center fixed right-3 top-2">
                   <div class="publish">
-                    <div class="btn btn-sm btn-ghost rounded-sm cursor-pointer" >Export <i class="fa-solid fa-globe"></i></div>
+                    <div id="publishBtn" class="btn btn-sm btn-ghost rounded-sm cursor-pointer" >Export <i class="fa-solid fa-globe"></i></div>
                   </div>
                   <div class="ml-2 btn btn-ghost btn-sm "><i class="fa-solid fa-ellipsis"></i></div>
                 </div>`;
@@ -152,6 +152,7 @@ const startClerk = async () => {
                       notespace.innerHTML = `<div>Error retrieving content</div>`;
                     });
                 })
+
                 .catch((error) => {
                   console.error("Error retrieving document:", error);
                   notespace.innerHTML = `<div>Error retrieving document</div>`;
@@ -194,6 +195,8 @@ const startClerk = async () => {
               },
               data: parsedContent,
             });
+
+            
 
             const titleTextBox = document.getElementById("note-title");
             titleTextBox.addEventListener("input", function () {
@@ -326,7 +329,7 @@ const startClerk = async () => {
             publishMenu.innerHTML += `
                 <div class="flex items-center fixed right-3 top-2">
                   <div class="publish">
-                    <div class="btn btn-sm btn-ghost rounded-sm cursor-pointer">Export <i class="fa-solid fa-globe"></i></div>
+                    <div id="publishBtn" class="btn btn-sm btn-ghost rounded-sm cursor-pointer">Export <i class="fa-solid fa-globe"></i></div>
                   </div>
                   <div class="ml-2 btn btn-ghost btn-sm "><i class="fa-solid fa-ellipsis"></i></div>
                 </div>`;
@@ -408,6 +411,11 @@ const startClerk = async () => {
                   },
                 },
               },
+            });
+
+            const publishBtn = document.getElementById("publishBtn");
+            publishBtn.addEventListener("click", function () {
+              console.log("clicked bro");
             });
             function saveEditorData(documentId) {
               editor
