@@ -31,7 +31,7 @@ const startClerk = async () => {
           const trashboxContent = document.querySelector(".trashboxContent");
           trashboxContent.innerHTML = "";
           for (const document of documents) {
-            trashboxContent.innerHTML += `<div class="trashDocuments" data-document-id="${document._id}">${document.title}<div class="deleteActions" data-document-id="${document._id}"><div class="revert"><i class="fa-solid fa-reply "></i></div><div data-document-id="${document._id}" class="perma-delete"><i class="fa-solid fa-trash"></i></div></div></div>
+            trashboxContent.innerHTML += `<div class="trashDocuments" data-document-id="${document._id}">${document.title}<div class="deleteActions" data-document-id="${document._id}"><div class="revert" data-document-id="${document._id}"><i class="fa-solid fa-reply "></i></div><div data-document-id="${document._id}" class="perma-delete"><i class="fa-solid fa-trash"></i></div></div></div>
             `;
           }
         }
@@ -55,8 +55,10 @@ const startClerk = async () => {
 
             sidebarContainer.innerHTML += `
                 <div class='document-title' data-document-id="${document._id}">
+                <div class='titleContainer'>
                     <div class="expand"><i class='fa-solid fa-chevron-right fa-xs'></i></div>
                     <div class='title'>${document.title}</div> 
+                </div>
                     <div class='actionItems'>
                         <div class='delete-document moreoptions' data-document-id='${document._id}'><i class='fa-solid fa-trash fa-xs'></i></div>
                         <div class='add-child' data-document-id='${document._id}'><i class='fa-solid fa-plus fa-sm'></i></div>
@@ -95,6 +97,7 @@ const startClerk = async () => {
           });
 
           documentTitles.forEach((title) => {
+            const navTitle = document.getElementById("navTitle");
             title.addEventListener("click", function () {
               const documentId = title.dataset.documentId;
               const notespace = document.getElementById("note-space");
@@ -117,13 +120,13 @@ const startClerk = async () => {
                   console.log("task:", documents[0]._id);
                   userspace.style.display = "none";
                   notespace.style.display = "block";
-                  notespace.innerHTML = "";
+                  navTitle.innerHTML = `${documents[0].title}`;
                   notespace.innerHTML = `
-                        <div class="note-wallpaper" id="note-wallpaper"></div>
-                        <div class="note-title">
-                            <input type="text" id="note-title" data-id="${documents[0]._id}" value="${documents[0].title}">
-                        </div>
-                        <div id="editor" data-document-id="${documents[0]._id}"></div>`;
+                            <div class="note-wallpaper" id="note-wallpaper"></div>
+                            <div class="note-title">
+                                <input type="text" id="note-title" data-id="${documents[0]._id}" value="${documents[0].title}">
+                            </div>
+                            <div id="editor" data-document-id="${documents[0]._id}"></div>`;
 
                   client
                     .query("documents:getEditor", { id: documentId })
@@ -132,72 +135,8 @@ const startClerk = async () => {
                       console.log(content);
                       const parsedContent = content ? JSON.parse(content) : {};
 
-                      const editor = new EditorJS({
-                        autofocus: true,
-                        holder: "editor",
-                        placeholder: "Start typing...",
-                        onChange: () => {
-                          saveEditorData(documentId);
-                        },
-                        tools: {
-                          paragraph: {
-                            class: Paragraph,
-                            inlineToolbar: true,
-                          },
-                          header: {
-                            class: Header,
-                            inlineToolbar: true,
-                          },
-                          list: {
-                            class: List,
-                            inlineToolbar: true,
-                          },
-                          checklist: {
-                            class: Checklist,
-                            inlineToolbar: true,
-                          },
-                          embed: {
-                            class: Embed,
-                          },
-                          image: {
-                            class: Image,
-                            inlineToolbar: true,
-                          },
-                        },
-                        data: parsedContent,
-                      });
-
-                      const titleTextBox =
-                        document.getElementById("note-title");
-                      titleTextBox.addEventListener("input", function () {
-                        const documentId = titleTextBox.dataset.id;
-                        client.mutation(
-                          "documents:renameTitle",
-                          { id: documentId, title: titleTextBox.value },
-                          (documents) => {
-                            console.log("task:", documents);
-                          }
-                        );
-                      });
-
-                      function saveEditorData(documentId) {
-                        editor
-                          .save()
-                          .then((data) => {
-                            const content = JSON.stringify(data);
-                            console.log("Saved data:", content);
-                            client.mutation(
-                              "documents:saveEditor",
-                              { id: documentId, content: content },
-                              (documents) => {
-                                console.log("task:", documents);
-                              }
-                            );
-                          })
-                          .catch((error) => {
-                            console.error("Saving failed:", error);
-                          });
-                      }
+                      // Initialize EditorJS inside the promise callback
+                      initializeEditor(parsedContent, documentId);
                     })
                     .catch((error) => {
                       console.error("Error retrieving content:", error);
@@ -211,17 +150,103 @@ const startClerk = async () => {
             });
           });
 
+          function initializeEditor(parsedContent, documentId) {
+            const editor = new EditorJS({
+              autofocus: true,
+              holder: "editor",
+              placeholder: "Start typing...",
+              onChange: () => {
+                saveEditorData(documentId);
+              },
+              tools: {
+                paragraph: {
+                  class: Paragraph,
+                  inlineToolbar: true,
+                },
+                header: {
+                  class: Header,
+                  inlineToolbar: true,
+                },
+                list: {
+                  class: List,
+                  inlineToolbar: true,
+                },
+                checklist: {
+                  class: Checklist,
+                  inlineToolbar: true,
+                },
+                embed: {
+                  class: Embed,
+                },
+                image: {
+                  class: Image,
+                  inlineToolbar: true,
+                },
+              },
+              data: parsedContent,
+            });
+
+            const titleTextBox = document.getElementById("note-title");
+            titleTextBox.addEventListener("input", function () {
+              const documentId = titleTextBox.dataset.id;
+              client.mutation(
+                "documents:renameTitle",
+                { id: documentId, title: titleTextBox.value },
+                (documents) => {
+                  console.log("task:", documents);
+                }
+              );
+            });
+
+            function saveEditorData(documentId) {
+              editor
+                .save()
+                .then((data) => {
+                  const content = JSON.stringify(data);
+                  console.log("Saved data:", content);
+                  client.mutation(
+                    "documents:saveEditor",
+                    { id: documentId, content: content },
+                    (documents) => {
+                      console.log("task:", documents);
+                    }
+                  );
+                })
+                .catch((error) => {
+                  console.error("Saving failed:", error);
+                });
+            }
+          }
+
           const deleteDocumentButtons =
             document.querySelectorAll(".delete-document");
           deleteDocumentButtons.forEach((button) => {
-            button.addEventListener("click", function () {
+            button.addEventListener("click", function (event) {
+              event.stopPropagation();
               const documentId = button.dataset.documentId;
+              const notespace = document.getElementById("note-space");
+              const userspace = document.getElementById("user-space");
+              notespace.style.display = "none";
+              userspace.style.display = "flex";
               deleteNote(documentId);
             });
           });
         }
       );
 
+          document.addEventListener("click", function (event) {
+            const restoreButton = event.target.closest(".revert");
+            if (restoreButton) {
+              const documentId = restoreButton.dataset.documentId;
+              restoreNote(documentId);
+            }
+          })
+
+      function restoreNote(documentId) {
+        client.mutation("documents:restore", { id: documentId }, (document) => {
+          console.log("task:", document);
+        })
+      }
       function deleteNote(documentId) {
         client.mutation(
           "documents:archive",

@@ -12,6 +12,7 @@
 nav {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   position: fixed;
   height: 45px;
   width: 100%;
@@ -147,6 +148,7 @@ aside {
   color: #737373;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   min-height: 29px;
   padding-left: 10px;
   cursor: pointer;
@@ -172,21 +174,34 @@ aside {
 
 .title{
   padding-left: 5px;
+  max-width: 100px ;
+}
+
+.document-title .title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .expand{
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
+  min-width: 16px;
   height: 16px;
   border-radius: .2rem;
 }
 
 .actionItems{
   display: flex;
-  padding-left: 95px;
   opacity: 0;
+  align-items: center;
+  margin-right: 15px;
+}
+
+.titleContainer{
+  display: flex;
+  align-items: center;
 }
 
 .add-child{
@@ -716,4 +731,13 @@ aside {
   padding-left: 10px;
   cursor: pointer;
   width: 100%;
+}
+
+.publish{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 2%;
+  right: 3%;
 }

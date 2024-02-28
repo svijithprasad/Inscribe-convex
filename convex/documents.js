@@ -96,7 +96,7 @@ export const saveEditor = mutation({
   handler: async (ctx, args) => {
     const document = await ctx.db.patch(args.id, {
       content: args.content,
-    })
+    });
     return document;
   },
 });
@@ -106,10 +106,13 @@ export const getEditor = query({
     id: v.id("documents"),
   },
   handler: async (ctx, args) => {
-    const document = await ctx.db.query("documents").filter(q => q.eq(q.field("_id"), args.id)).collect();
+    const document = await ctx.db
+      .query("documents")
+      .filter((q) => q.eq(q.field("_id"), args.id))
+      .collect();
     return document;
-  }
-})
+  },
+});
 
 export const renameTitle = mutation({
   args: {
@@ -118,8 +121,19 @@ export const renameTitle = mutation({
   },
   handler: async (ctx, args) => {
     const document = await ctx.db.patch(args.id, {
-      title: args.title
-    })
+      title: args.title,
+    });
     return document;
-  }
-})
+  },
+});
+
+export const restore = mutation({
+  args: {
+    id: v.id("documents"),
+  },
+  handler: async (ctx, args) => {
+    const document = await ctx.db.patch(args.id, { isArchived: false });
+    return document;
+  },
+});
+
