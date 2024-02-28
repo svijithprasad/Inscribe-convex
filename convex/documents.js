@@ -110,3 +110,16 @@ export const getEditor = query({
     return document;
   }
 })
+
+export const renameTitle = mutation({
+  args: {
+    id: v.id("documents"),
+    title: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const document = await ctx.db.patch(args.id, {
+      title: args.title
+    })
+    return document;
+  }
+})

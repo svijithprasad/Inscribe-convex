@@ -99,14 +99,18 @@ const startClerk = async () => {
               const documentId = title.dataset.documentId;
               const notespace = document.getElementById("note-space");
               const userspace = document.getElementById("user-space");
-              notespace.innerHTML = `<div class="flex flex-col p-3 gap-2">
-              <div class="skeleton h-52 w-full bg-[#666666] opacity-10"></div>
-              <div class="flex flex-col w-[800px] ml-[250px] gap-2">
-              <div class="skeleton h-4  bg-[#666666] opacity-10"></div>
-              <div class="skeleton h-4  bg-[#666666] opacity-10"></div>
-              <div class="skeleton h-4  bg-[#666666] opacity-10"></div>
-              </div>
-            </div>`;
+
+              // Display skeleton loading animation
+              notespace.innerHTML = `
+                    <div class="flex flex-col p-3 gap-2">
+                        <div class="skeleton h-52 w-full bg-[#666666] opacity-10"></div>
+                        <div class="flex flex-col w-[800px] ml-[250px] gap-2">
+                            <div class="skeleton h-4  bg-[#666666] opacity-10"></div>
+                            <div class="skeleton h-4  bg-[#666666] opacity-10"></div>
+                            <div class="skeleton h-4  bg-[#666666] opacity-10"></div>
+                        </div>
+                    </div>`;
+
               client
                 .query("documents:get", { id: documentId })
                 .then((documents) => {
@@ -114,66 +118,68 @@ const startClerk = async () => {
                   userspace.style.display = "none";
                   notespace.style.display = "block";
                   notespace.innerHTML = "";
-                  notespace.innerHTML += `          <div class="note-wallpaper" id="note-wallpaper"></div>
-                <div class="note-title"><input type="text" id="note-title" data-id="${documents[0]._id}"></div>
-                <div id="editor" data-document-id="${documents[0]._id}"></div>`;
-                  const editorElement = document.getElementById("editor");
-                  const documentId = editorElement.dataset.documentId;
-                  console.log(documentId);
+                  notespace.innerHTML += `
+                        <div class="note-wallpaper" id="note-wallpaper"></div>
+                        <div class="note-title">
+                            <input type="text" id="note-title" data-id="${documents[0]._id}" value="${documents[0].title}">
+                        </div>
+                        <div id="editor" data-document-id="${documents[0]._id}"></div>`;
 
                   client
-                    .query("documents:getEditor", { id: documentId }, {documents}.then((documents) => {
+                    .query("documents:getEditor", { id: documentId })
+                    .then((documents) => {
                       const content = documents[0].content;
-                    }))
-                    .then((content) => {
-                      const content = document[0].content;
                       console.log(content);
+                      
 
-                      // Initialize EditorJS inside the promise callback
                       const editor = new EditorJS({
+                        autofocus: true,
                         holder: "editor",
+                        placeholder: "Start typing...",
                         onChange: () => {
                           saveEditorData(documentId);
                         },
                         tools: {
+                          paragraph: {
+                            class: Paragraph,
+                            inlineToolbar: true,
+                          },
                           header: {
                             class: Header,
-                            inlineToolbars: true,
+                            inlineToolbar: true,
                           },
                           list: {
                             class: List,
-                          },
-                          embed: {
-                            class: Embed,
-                            config: {
-                              services: {
-                                youtube: true,
-                                coub: true,
-                                vimeo: true,
-                              },
-                            },
-                          },
-                          paragraph: {
-                            class: Paragraph,
-                            inlineToolbars: true,
+                            inlineToolbar: true,
                           },
                           checklist: {
                             class: Checklist,
-                            inlineToolbars: true,
-                          },
-                          table: {
-                            class: Table,
                             inlineToolbar: true,
-                            config: {
-                              rows: 3,
-                              cols: 3,
-                            },
+                          },
+                          embed: {
+                            class: Embed,
+                          },
+                          image: {
+                            class: Image,
+                            inlineToolbar: true,
                           },
                         },
-                        data: content, // Assign the retrieved content to the EditorJS instance
+                        data: JSON.parse(content),
                       });
 
-                      // Function to save editor data and handle potential errors
+                      const titleTextBox =
+                        document.getElementById("note-title");
+                      titleTextBox.addEventListener("input", function () {
+                        const documentId = titleTextBox.dataset.id;
+                        client.mutation(
+                          "documents:renameTitle",
+                          { id: documentId, title: titleTextBox.value },
+                          (documents) => {
+                            console.log("task:", documents);
+                          }
+                        );
+                      });
+
                       function saveEditorData(documentId) {
                         editor
                           .save()
@@ -192,7 +198,15 @@ const startClerk = async () => {
                             console.error("Saving failed:", error);
                           });
                       }
+                    })
+                    .catch((error) => {
+                      console.error("Error retrieving content:", error);
+                      notespace.innerHTML = `<div>Error retrieving content</div>`;
                     });
+                })
+                .catch((error) => {
+                  console.error("Error retrieving document:", error);
+                  notespace.innerHTML = `<div>Error retrieving document</div>`;
                 });
             });
           });
