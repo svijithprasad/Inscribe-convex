@@ -31,7 +31,7 @@ const startClerk = async () => {
           const trashboxContent = document.querySelector(".trashboxContent");
           trashboxContent.innerHTML = "";
           for (const document of documents) {
-            trashboxContent.innerHTML += `<div class="trashDocuments" data-document-id="${document._id}">${document.title}<div class="deleteActions" data-document-id="${document._id}"><div class="revert" data-document-id="${document._id}"><i class="fa-solid fa-reply "></i></div><div data-document-id="${document._id}" class="perma-delete"><i class="fa-solid fa-trash"></i></div></div></div>
+            trashboxContent.innerHTML += `<div class="trashDocuments" data-document-id="${document._id}">${document.title}<div class="deleteActions" data-document-id="${document._id}"><div class="revert" data-document-id="${document._id}"><i class="fa fa-reply "></i></div><div data-document-id="${document._id}" class="perma-delete"><i class="fa-solid fa-trash"></i></div></div></div>
             `;
           }
         }
