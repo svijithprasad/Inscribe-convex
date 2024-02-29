@@ -5,7 +5,7 @@ jQuery(document).ready(function () {
     //   console.log(base64Image);
 
     let pdf = new jsPDF('p','px',[2480 , 3508]);
-    pdf.addImage(base64Image, 'PNG', 15,15, 2480, 3508);
+    pdf.addImage(base64Image, 'PNG', 5,5, 2480, 1296 );
     pdf.save('ExportedDocs.pdf');
     });
   });

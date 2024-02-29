@@ -36,7 +36,7 @@ const startClerk = async () => {
             const trashboxContent = document.querySelector(".trashboxContent");
             trashboxContent.innerHTML = "";
             for (const document of documents) {
-              trashboxContent.innerHTML += `<div class="trashDocuments" data-document-id="${document._id}">${document.title}<div class="deleteActions" data-document-id="${document._id}"><div class="revert" data-document-id="${document._id}"><i class="fa fa-reply "></i></div><div data-document-id="${document._id}" class="perma-delete"><i class="fa-solid fa-trash"></i></div></div></div>
+              trashboxContent.innerHTML += `<div class="trashDocuments text-black text-sm" data-document-id="${document._id}">${document.title}<div class="deleteActions" data-document-id="${document._id}"><div class="revert" data-document-id="${document._id}"><i class="fa fa-reply "></i></div><div data-document-id="${document._id}" class="perma-delete"><i class="fa-solid fa-trash"></i></div></div></div>
             `;
             }
           }
@@ -54,17 +54,17 @@ const startClerk = async () => {
         { userId: userId },
         (documents) => {
           // Clear existing content
-          if(!documents.length == 0){
+          if (!documents.length == 0) {
             sidebarContainer.innerHTML = "";
-          for (let i = 0; i < documents.length; i++) {
-            const document = documents[i];
-            const isActive = i === 0 ? "active" : "";
+            for (let i = 0; i < documents.length; i++) {
+              const document = documents[i];
+              const isActive = i === 0 ? "active" : "";
 
-            sidebarContainer.innerHTML += `
+              sidebarContainer.innerHTML += `
                 <div class='document-title' data-document-id="${document._id}">
                 <div class='titleContainer'>
                     <div class="expand"><i class='fa-solid fa-chevron-right fa-xs'></i></div>
-                    <div class='title'>${document.title}</div> 
+                    <div class='title text-sm truncate'>${document.title}</div>
                 </div>
                     <div class='actionItems'>
                         <div class='delete-document moreoptions' data-document-id='${document._id}'><i class='fa-solid fa-trash fa-xs'></i></div>
@@ -72,9 +72,9 @@ const startClerk = async () => {
                     </div>
                 </div>
             `;
-          }
-          }else{
-            sidebarContainer.innerHTML = `<div class="flex items-center min-h-7 pl-4 font-normal text-sm text-black "><p>No document created!</p></div>`
+            }
+          } else {
+            sidebarContainer.innerHTML = `<div class="flex items-center min-h-7 pl-4 font-normal text-sm text-black "><p>No document created!</p></div>`;
           }
 
           document.addEventListener("DOMContentLoaded", function () {
@@ -108,12 +108,13 @@ const startClerk = async () => {
 
           documentTitles.forEach((title) => {
             const navTitle = document.getElementById("navTitle");
-            title.addEventListener("click", function () {
+            title.addEventListener("click", function (event) {
+              event.stopPropagation();
               const documentId = title.dataset.documentId;
               const notespace = document.getElementById("note-space");
               const userspace = document.getElementById("user-space");
               const publishMenu = document.querySelector(".publish-Menu");
-              const publishBtn = document.getElementById("publishBtn");
+              publishMenu.style.display = "flex";
               // Display skeleton loading animation
               notespace.innerHTML = `
                     <div class="flex flex-col p-3 gap-2">
@@ -130,13 +131,14 @@ const startClerk = async () => {
                 .then((documents) => {
                   userspace.style.display = "none";
                   notespace.style.display = "block";
-                  navTitle.innerHTML = `${documents[0].title}`;
+                  navTitle.style.display = "block";
+                  navTitle.innerHTML = `<p>${documents[0].title}</p>`;
                   client.onUpdate(
                     "documents:get",
                     { id: documentId },
                     (documents) => {
                       const dynamicTitle = documents[0].title;
-                      navTitle.innerHTML = `${dynamicTitle}`;
+                      navTitle.innerHTML = `<p>${dynamicTitle}</p>`;
                     }
                   );
                   publishMenu.innerHTML = "";
@@ -149,9 +151,11 @@ const startClerk = async () => {
                 </div>`;
 
                   notespace.innerHTML = `
-                            <div class="note-wallpaper" id="note-wallpaper"></div>
+                            <div class="note-wallpaper" id="note-wallpaper">
+                            <input type="file" accept="image/*" id="wallpaper" class="hidden">
+                            </div>
                             <div class="note-title">
-                                <input type="text" id="note-title" data-id="${documents[0]._id}" value="${documents[0].title}">
+                                <input class="title-input" type="text" id="note-title" data-id="${documents[0]._id}" value="${documents[0].title}">
                             </div>
                             <div id="editor" data-document-id="${documents[0]._id}"></div>`;
                   client
@@ -165,8 +169,7 @@ const startClerk = async () => {
                       initializeEditor(parsedContent, documentId);
 
                       const publishBtn = document.getElementById("publishBtn");
-                      const publishTab =
-                        document.querySelector(".publish-tab");
+                      const publishTab = document.querySelector(".publish-tab");
                       publishBtn.addEventListener("click", function (event) {
                         event.stopPropagation();
                         console.log("publish-up");
@@ -268,9 +271,14 @@ const startClerk = async () => {
             const titleTextBox = document.getElementById("note-title");
             titleTextBox.addEventListener("input", function () {
               const documentId = titleTextBox.dataset.id;
+              const titleValue = titleTextBox.value.trim(); // Trim whitespace
+
+              // If titleValue is empty, set it to "Untitled", otherwise use the current value
+              const titleToSend = titleValue ? titleValue : "Untitled";
+
               client.mutation(
                 "documents:renameTitle",
-                { id: documentId, title: titleTextBox.value },
+                { id: documentId, title: titleToSend },
                 (documents) => {
                   console.log("task:", documents);
                 }
@@ -305,10 +313,12 @@ const startClerk = async () => {
               const documentId = button.dataset.documentId;
               const notespace = document.getElementById("note-space");
               const userspace = document.getElementById("user-space");
-              const navTitle = document.getElementById("navTitle");
+              const navTitle = document.querySelector(".navTitle");
+              const publishMenu = document.querySelector(".publish-Menu");
+              publishMenu.style.display = "none";
+              navTitle.style.display = "none";
               notespace.style.display = "none";
               userspace.style.display = "flex";
-              navTitle.innerHTML = "";
               deleteNote(documentId);
             });
           });
@@ -362,6 +372,7 @@ const startClerk = async () => {
     openTrash.addEventListener("click", function (event) {
       const trashBox = document.querySelector(".trashbox");
       const deleteConfirm = document.getElementById("deleteConfirm");
+      const closeModalBtn = document.querySelector(".closeModalBtn");
       event.stopPropagation();
 
       trashBox.style.display = "flex";
@@ -371,18 +382,13 @@ const startClerk = async () => {
         if (
           !trashBox.contains(event.target) &&
           event.target !== openTrash &&
-          event.target !== deleteConfirm
+          event.target !== deleteConfirm &&
+          event.target !== closeModalBtn
         ) {
           // Hide publishMenu
           trashBox.style.display = "none";
         }
       });
-    });
-
-    const closeTrash = document.querySelector(".closeTrash");
-    closeTrash.addEventListener("click", function (event) {
-      const trashBox = document.querySelector(".trashbox");
-      trashBox.style.display = "none";
     });
 
     const addBtn = document.getElementById("addDocument");
@@ -393,6 +399,8 @@ const startClerk = async () => {
       const notespace = document.getElementById("note-space");
       const publishMenu = document.querySelector(".publish-Menu");
       const navTitle = document.getElementById("navTitle");
+      publishMenu.style.display = "flex";
+      navTitle.style.display = "block";
       userspace.style.display = "none";
       notespace.style.display = "block";
 
@@ -406,7 +414,7 @@ const startClerk = async () => {
         .then((documents) => {
           client.query("documents:get", { id: documents }).then((documents) => {
             console.log("task:", documents[0]._id);
-            navTitle.innerHTML = `${documents[0].title}`;
+            navTitle.innerHTML = `<p>${documents[0].title}</p>`;
             publishMenu.innerHTML = "";
             publishMenu.innerHTML += `
                 <div class="flex items-center fixed right-3 top-2">
@@ -417,9 +425,8 @@ const startClerk = async () => {
                 </div>`;
             notespace.innerHTML = "";
             notespace.innerHTML += `          <div class="note-wallpaper" id="note-wallpaper"></div>
-            <div class="note-title"><input type="text" id="note-title" data-id="${documents[0]._id}"></div>
+            <div class="note-title"><input class="title-input" type="text" id="note-title" data-id="${documents[0]._id}" value="${documents[0].title}"></div>
             <div id="editor" data-id="${documents[0]._id}"></div>`;
-            console.log("task:", documents[0].title);
             const titleTextBox = document.getElementById("note-title");
             titleTextBox.value = documents[0].title;
             const documentId = titleTextBox.dataset.id;
@@ -435,10 +442,10 @@ const startClerk = async () => {
               { id: documentId },
               (documents) => {
                 const navTitle = document.getElementById("navTitle");
-                navTitle.innerHTML = `${documents[0].title}`;
+                navTitle.innerHTML = `<p>${documents[0].title}</p>`;
               }
             );
-            
+
             const editor = new EditorJS({
               holder: "editor",
               autofocus: true,
@@ -505,25 +512,24 @@ const startClerk = async () => {
             });
 
             const publishBtn = document.getElementById("publishBtn");
-                      const publishTab =
-                        document.querySelector(".publish-tab");
-                      publishBtn.addEventListener("click", function (event) {
-                        event.stopPropagation();
-                        console.log("publish-down");
-                        publishTab.classList.remove("hidden");
-                        publishTab.classList.add("flex");
-                        document.addEventListener("click", function (event) {
-                          // Check if the click target is not within publishMenu or publishBtn
-                          if (
-                            !publishTab.contains(event.target) &&
-                            event.target !== publishBtn
-                          ) {
-                            // Hide publishMenu
-                            publishTab.classList.remove("flex");
-                            publishTab.classList.add("hidden");
-                          }
-                        });
-                      });
+            const publishTab = document.querySelector(".publish-tab");
+            publishBtn.addEventListener("click", function (event) {
+              event.stopPropagation();
+              console.log("publish-down");
+              publishTab.classList.remove("hidden");
+              publishTab.classList.add("flex");
+              document.addEventListener("click", function (event) {
+                // Check if the click target is not within publishMenu or publishBtn
+                if (
+                  !publishTab.contains(event.target) &&
+                  event.target !== publishBtn
+                ) {
+                  // Hide publishMenu
+                  publishTab.classList.remove("flex");
+                  publishTab.classList.add("hidden");
+                }
+              });
+            });
             function saveEditorData(documentId) {
               editor
                 .save()

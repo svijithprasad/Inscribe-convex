@@ -32,14 +32,17 @@ export const getSidebar = query({
 // Create a new task with the given text
 export const create = mutation({
   args: {
-    title: v.optional(v.string() || "Untitled"),
+    title: v.optional(v.string()),
     userId: v.string(),
     isArchived: v.boolean(),
     isPublished: v.boolean(),
   },
   handler: async (ctx, args) => {
+    // Check if args.title is unset or falsy, and assign "Untitled" if so
+    const title = args.title || "Untitled";
+
     const document = await ctx.db.insert("documents", {
-      title: args.title,
+      title: title,
       userId: args.userId,
       isArchived: args.isArchived,
       isPublished: args.isPublished,
@@ -48,6 +51,7 @@ export const create = mutation({
     return document;
   },
 });
+
 
 export const remove = mutation({
   args: {

@@ -19,8 +19,8 @@ const startClerk = async () => {
     loaderMain.style.display = "block";
     authLinks.style.display = "none";
     await Clerk.load({
-      afterSignInUrl: "/inscribe-1.0",
-      afterSignUpUrl: "/inscribe-1.0",
+      afterSignInUrl: "/dist/",
+      afterSignUpUrl: "/dist/",
       SameSite: "None",
     });
     loader.style.display = "none";
