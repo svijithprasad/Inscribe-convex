@@ -727,8 +727,8 @@ aside {
   color: #737373;
   display: flex;
   align-items: center;
+  justify-content: center;
   min-height: 29px;
-  padding-left: 10px;
   cursor: pointer;
   width: 100%;
 }

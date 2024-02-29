@@ -28,6 +28,9 @@ const startClerk = async () => {
         "documents:getArchived",
         { userId: userId },
         (documents) => {
+          if(documents.length == 0){
+            document.querySelector(".trashboxContent").innerHTML = `<div class="no-document "><p>No document deleted!</p></div>`
+          }else{
           const trashboxContent = document.querySelector(".trashboxContent");
           trashboxContent.innerHTML = "";
           for (const document of documents) {
@@ -35,6 +38,7 @@ const startClerk = async () => {
             `;
           }
         }
+      }
       );
 
       const sidebarContainer = document.getElementById("titles-list");
@@ -103,6 +107,7 @@ const startClerk = async () => {
               const notespace = document.getElementById("note-space");
               const userspace = document.getElementById("user-space");
               const publishMenu = document.querySelector(".publish-Menu");
+              const publishBtn = document.getElementById("publishBtn");
               // Display skeleton loading animation
               notespace.innerHTML = `
                     <div class="flex flex-col p-3 gap-2">
@@ -120,10 +125,14 @@ const startClerk = async () => {
                   userspace.style.display = "none";
                   notespace.style.display = "block";
                   navTitle.innerHTML = `${documents[0].title}`;
-                  client.onUpdate("documents:get", { id: documentId }, (documents) => {
-                    const dynamicTitle = documents[0].title;
-                    navTitle.innerHTML = `${dynamicTitle}`;
-                  });
+                  client.onUpdate(
+                    "documents:get",
+                    { id: documentId },
+                    (documents) => {
+                      const dynamicTitle = documents[0].title;
+                      navTitle.innerHTML = `${dynamicTitle}`;
+                    }
+                  );
                   publishMenu.innerHTML = "";
                   publishMenu.innerHTML += `
                 <div class="flex items-center fixed right-3 top-2">
@@ -139,7 +148,6 @@ const startClerk = async () => {
                                 <input type="text" id="note-title" data-id="${documents[0]._id}" value="${documents[0].title}">
                             </div>
                             <div id="editor" data-document-id="${documents[0]._id}"></div>`;
-
                   client
                     .query("documents:getEditor", { id: documentId })
                     .then((documents) => {
@@ -148,7 +156,7 @@ const startClerk = async () => {
                       const parsedContent = content ? JSON.parse(content) : {};
 
                       // Initialize EditorJS inside the promise callback
-                      initializeEditor(parsedContent, documentId);
+                      initializeEditor( parsedContent, documentId);
                     })
                     .catch((error) => {
                       console.error("Error retrieving content:", error);
@@ -164,6 +172,21 @@ const startClerk = async () => {
           });
 
           function initializeEditor(parsedContent, documentId) {
+            const publishBtn = document.getElementById("publishBtn");
+            const publishMenu = document.querySelector(".publish-tab");
+            publishBtn.addEventListener("click", function (event) {
+              console.log("publish");
+              publishMenu.classList.remove("hidden");
+              publishMenu.classList.add("flex");
+            })
+            document.addEventListener("click", function (event) {
+              // Check if the click target is not within publishMenu or publishBtn
+              if (!publishMenu.contains(event.target) && event.target !== publishBtn) {
+                  // Hide publishMenu
+                  publishMenu.classList.add("hidden");
+              }
+          });
+
             const editor = new EditorJS({
               autofocus: true,
               holder: "editor",
@@ -198,8 +221,6 @@ const startClerk = async () => {
               },
               data: parsedContent,
             });
-
-            
 
             const titleTextBox = document.getElementById("note-title");
             titleTextBox.addEventListener("input", function () {
@@ -297,10 +318,20 @@ const startClerk = async () => {
     const openTrash = document.getElementById("openTrash");
     openTrash.addEventListener("click", function (event) {
       const trashBox = document.querySelector(".trashbox");
+      const deleteConfirm = document.getElementById("deleteConfirm");
       event.stopPropagation();
 
       trashBox.style.display = "flex";
+
+      document.addEventListener("click", function (event) {
+        // Check if the click target is not within publishMenu or publishBtn
+        if (!trashBox.contains(event.target) && event.target !== openTrash && event.target !== deleteConfirm) {
+            // Hide publishMenu
+            trashBox.style.display = "none";
+        }
     });
+    });
+
 
     const closeTrash = document.querySelector(".closeTrash");
     closeTrash.addEventListener("click", function (event) {
@@ -353,6 +384,14 @@ const startClerk = async () => {
                 title: titleTextBox.value,
               });
             });
+            client.onUpdate(
+              "documents:get",
+              { id: documentId },
+              (documents) => {
+                const navTitle = document.getElementById("navTitle");
+                navTitle.innerHTML = `${documents[0].title}`;
+              }
+            );
             const editor = new EditorJS({
               holder: "editor",
               autofocus: true,
