@@ -1,0 +1,61 @@
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EditorJS Example</title>
+  <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@editorjs/table@latest"></script>
+
+</head>
+<body>
+  <div id="editorjs"></div>
+  <button id="save-button">Save Content</button>
+  <script>
+    const editor = new EditorJS({
+      holder: 'editorjs',
+      onChange: () => { // Corrected from onchange to onChange
+        saveEditorData();
+      },
+      tools : {
+        header: {
+          class: Header,
+        },
+        list: {
+          class: List,
+        },
+        table: {
+          class: Table,
+          inlineToolbar: true,
+          config: {
+            rows: 3,
+            cols: 3,
+          },
+        }
+      },
+
+      data: {
+        // Your initial data
+      }
+    });
+
+    // Function to save editor data and handle potential errors
+    function saveEditorData() {
+      editor.save()
+        .then((data) => {
+          console.log('Saved data:', data);
+        })
+        .catch((error) => {
+          console.error('Saving failed:', error);
+        });
+    }
+
+    // Button or event listener to trigger save functionality
+    const saveButton = document.getElementById('save-button'); // Assuming a button exists with this ID
+    saveButton.addEventListener('click', saveEditorData);
+
+  </script>
+</body>
+</html>

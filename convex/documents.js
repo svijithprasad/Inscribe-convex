@@ -124,8 +124,9 @@ export const renameTitle = mutation({
     title: v.string(),
   },
   handler: async (ctx, args) => {
+    const title = args.title || "Untitled";
     const document = await ctx.db.patch(args.id, {
-      title: args.title,
+      title: title,
     });
     return document;
   },

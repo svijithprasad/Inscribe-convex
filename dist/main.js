@@ -12,11 +12,27 @@ const startClerk = async () => {
     await Clerk.load();
     const userButton = document.getElementById("user-button");
     const userNameMain = document.querySelector(".userNameMain");
+    function checkUser() {
+      if (Clerk.user) {
+        console.log("user true");
+      } else {
+        window.location.href = "index.html";
+      }
+    }
+
+    setInterval(checkUser, 100);
     if (Clerk.user) {
+      const userEmail = document.getElementById("user-email");
+      const DropDownImg = document.getElementById("user-dropdown-image");
+      const DropDownName = document.getElementById("user-dropdown-name");
       const userName = document.getElementById("userName");
       const profile = Clerk.user.imageUrl;
+      const email = Clerk.user?.emailAddresses[0].emailAddress;
+      userEmail.innerHTML = `<p>${email}</p>`;
       userButton.innerHTML = `<img style='border-radius: 50%; width: 25px;
       height: 25px;' src=${profile} alt="Profile">`;
+      DropDownImg.innerHTML = `<img src=${profile} alt="Profile" width="35px" height="35px">`;
+      DropDownName.innerHTML = `<p>${Clerk.user.firstName}'s Inscribe</p>`;
       const username = Clerk.user.firstName;
       userName.innerHTML = `<p>${username}'s Inscribe</p>`;
       userNameMain.innerHTML = `<h3>Welcome to ${username}'s Inscribe</h3>`;
@@ -157,7 +173,7 @@ const startClerk = async () => {
                             <div class="note-title">
                                 <input class="title-input" type="text" id="note-title" data-id="${documents[0]._id}" value="${documents[0].title}">
                             </div>
-                            <div id="editor" data-document-id="${documents[0]._id}"></div>`;
+                            <div id="editorjs" data-document-id="${documents[0]._id}"></div>`;
                   client
                     .query("documents:getEditor", { id: documentId })
                     .then((documents) => {
@@ -204,7 +220,7 @@ const startClerk = async () => {
           function initializeEditor(parsedContent, documentId) {
             const editor = new EditorJS({
               autofocus: true,
-              holder: "editor",
+              holder: "editorjs",
               placeholder: "Start typing...",
               onChange: () => {
                 saveEditorData(documentId);
@@ -214,7 +230,7 @@ const startClerk = async () => {
                   class: Header,
                   inlineToolbar: true,
                   config: {
-                    placeholder: "Enter a header",
+                    placeholder: 'Enter a header',
                     levels: [2, 3, 4],
                     defaultLevel: 2,
                   },
@@ -239,12 +255,14 @@ const startClerk = async () => {
                     cols: 3,
                   },
                 },
-                warning: {
-                  class: Warning,
+                embed: {
+                  class: Embed,
                   inlineToolbar: true,
                 },
-                delimiter: Delimiter,
-                inlineCode: InlineCode,
+                inlineCode: {
+                  class: InlineCode,
+                  inlineToolbar: true,
+                },
                 checklist: {
                   class: Checklist,
                   inlineToolbar: true,
@@ -253,17 +271,25 @@ const startClerk = async () => {
                   class: Marker,
                   inlineToolbar: true,
                 },
-                embed: {
-                  class: Embed,
-                  config: {
-                    services: {
-                      youtube: true,
-                      vimeo: true,
-                      twitter: true,
-                      instagram: true,
-                    },
-                  },
+                quote: {
+                  class: Quote,
                 },
+                delimiter: {
+                  class: Delimiter,
+                  inlineToolbar: true,
+                },
+                warning: {
+                  class: Warning,
+                },
+                image: {
+                  class: Image,
+                  config: {
+                    endpoints: {
+                      byFile: "https://api.imgur.com/v3/upload",
+                      byUrl: "https://api.imgur.com/v3/parse",
+                    }
+                  }
+                }
               },
               data: parsedContent,
             });
@@ -426,7 +452,7 @@ const startClerk = async () => {
             notespace.innerHTML = "";
             notespace.innerHTML += `          <div class="note-wallpaper" id="note-wallpaper"></div>
             <div class="note-title"><input class="title-input" type="text" id="note-title" data-id="${documents[0]._id}" value="${documents[0].title}"></div>
-            <div id="editor" data-id="${documents[0]._id}"></div>`;
+            <div id="editorjs" data-id="${documents[0]._id}"></div>`;
             const titleTextBox = document.getElementById("note-title");
             titleTextBox.value = documents[0].title;
             const documentId = titleTextBox.dataset.id;
@@ -447,18 +473,17 @@ const startClerk = async () => {
             );
 
             const editor = new EditorJS({
-              holder: "editor",
-              autofocus: true,
+              holder: "editorjs",
               onChange: () => {
                 saveEditorData(documentId);
               },
-              placeholder: "Start typing here...",
+
               tools: {
                 header: {
                   class: Header,
                   inlineToolbar: true,
                   config: {
-                    placeholder: "Enter a header",
+                    placeholder: 'Enter a header',
                     levels: [2, 3, 4],
                     defaultLevel: 2,
                   },
@@ -483,12 +508,14 @@ const startClerk = async () => {
                     cols: 3,
                   },
                 },
-                warning: {
-                  class: Warning,
+                embed: {
+                  class: Embed,
                   inlineToolbar: true,
                 },
-                delimiter: Delimiter,
-                inlineCode: InlineCode,
+                inlineCode: {
+                  class: InlineCode,
+                  inlineToolbar: true,
+                },
                 checklist: {
                   class: Checklist,
                   inlineToolbar: true,
@@ -497,16 +524,9 @@ const startClerk = async () => {
                   class: Marker,
                   inlineToolbar: true,
                 },
-                embed: {
-                  class: Embed,
-                  config: {
-                    services: {
-                      youtube: true,
-                      vimeo: true,
-                      twitter: true,
-                      instagram: true,
-                    },
-                  },
+                image : {
+                  class : Image,
+                  inlineToolbar : true,
                 },
               },
             });
@@ -604,3 +624,29 @@ function isNotResetting() {
   mainBar.style.marginLeft = "250px";
   aside.style.width = "250px";
 }
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  const userItem = document.getElementById("user-item");
+  const dropDown = document.getElementById("user-dropdown");
+
+  userItem.addEventListener("click", function () {
+    dropDown.classList.toggle("hidden");
+  });
+
+  document.addEventListener("click", function (event) {
+    if (!userItem.contains(event.target) && !dropDown.contains(event.target)) {
+      dropDown.classList.add("hidden");
+    }
+  });
+});
+
+// document.addEventListener("DOMContentLoaded", function () {
+//   const logoutBtn = document.getElementById("logoutBtn");
+//   function redirectTo(url) {
+//     window.Location.href = url;
+//   }
+//   logoutBtn.addEventListener("click", function () {
+//     redirectTo("/dist/index.html");
+//   });
+// });
