@@ -194,7 +194,7 @@ const startClerk = async () => {
               onChange: () => {
                 saveEditorData(documentId);
               },
-              tools: {
+               tools: {
                 header: {
                   class: Header,
                   inlineToolbar: true,
