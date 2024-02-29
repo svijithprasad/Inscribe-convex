@@ -28,17 +28,19 @@ const startClerk = async () => {
         "documents:getArchived",
         { userId: userId },
         (documents) => {
-          if(documents.length == 0){
-            document.querySelector(".trashboxContent").innerHTML = `<div class="no-document "><p>No document deleted!</p></div>`
-          }else{
-          const trashboxContent = document.querySelector(".trashboxContent");
-          trashboxContent.innerHTML = "";
-          for (const document of documents) {
-            trashboxContent.innerHTML += `<div class="trashDocuments" data-document-id="${document._id}">${document.title}<div class="deleteActions" data-document-id="${document._id}"><div class="revert" data-document-id="${document._id}"><i class="fa fa-reply "></i></div><div data-document-id="${document._id}" class="perma-delete"><i class="fa-solid fa-trash"></i></div></div></div>
+          if (documents.length == 0) {
+            document.querySelector(
+              ".trashboxContent"
+            ).innerHTML = `<div class="no-document "><p>No document deleted!</p></div>`;
+          } else {
+            const trashboxContent = document.querySelector(".trashboxContent");
+            trashboxContent.innerHTML = "";
+            for (const document of documents) {
+              trashboxContent.innerHTML += `<div class="trashDocuments" data-document-id="${document._id}">${document.title}<div class="deleteActions" data-document-id="${document._id}"><div class="revert" data-document-id="${document._id}"><i class="fa fa-reply "></i></div><div data-document-id="${document._id}" class="perma-delete"><i class="fa-solid fa-trash"></i></div></div></div>
             `;
+            }
           }
         }
-      }
       );
 
       const sidebarContainer = document.getElementById("titles-list");
@@ -52,7 +54,8 @@ const startClerk = async () => {
         { userId: userId },
         (documents) => {
           // Clear existing content
-          sidebarContainer.innerHTML = "";
+          if(!documents.length == 0){
+            sidebarContainer.innerHTML = "";
           for (let i = 0; i < documents.length; i++) {
             const document = documents[i];
             const isActive = i === 0 ? "active" : "";
@@ -69,6 +72,9 @@ const startClerk = async () => {
                     </div>
                 </div>
             `;
+          }
+          }else{
+            sidebarContainer.innerHTML = `<div class="flex items-center min-h-7 pl-4 font-normal text-sm text-black "><p>No document created!</p></div>`
           }
 
           document.addEventListener("DOMContentLoaded", function () {
@@ -156,7 +162,28 @@ const startClerk = async () => {
                       const parsedContent = content ? JSON.parse(content) : {};
 
                       // Initialize EditorJS inside the promise callback
-                      initializeEditor( parsedContent, documentId);
+                      initializeEditor(parsedContent, documentId);
+
+                      const publishBtn = document.getElementById("publishBtn");
+                      const publishTab =
+                        document.querySelector(".publish-tab");
+                      publishBtn.addEventListener("click", function (event) {
+                        event.stopPropagation();
+                        console.log("publish-up");
+                        publishTab.classList.remove("hidden");
+                        publishTab.classList.add("flex");
+                        document.addEventListener("click", function (event) {
+                          // Check if the click target is not within publishMenu or publishBtn
+                          if (
+                            !publishTab.contains(event.target) &&
+                            event.target !== publishBtn
+                          ) {
+                            // Hide publishMenu
+                            publishTab.classList.remove("flex");
+                            publishTab.classList.add("hidden");
+                          }
+                        });
+                      });
                     })
                     .catch((error) => {
                       console.error("Error retrieving content:", error);
@@ -172,21 +199,6 @@ const startClerk = async () => {
           });
 
           function initializeEditor(parsedContent, documentId) {
-            const publishBtn = document.getElementById("publishBtn");
-            const publishMenu = document.querySelector(".publish-tab");
-            publishBtn.addEventListener("click", function (event) {
-              console.log("publish");
-              publishMenu.classList.remove("hidden");
-              publishMenu.classList.add("flex");
-            })
-            document.addEventListener("click", function (event) {
-              // Check if the click target is not within publishMenu or publishBtn
-              if (!publishMenu.contains(event.target) && event.target !== publishBtn) {
-                  // Hide publishMenu
-                  publishMenu.classList.add("hidden");
-              }
-          });
-
             const editor = new EditorJS({
               autofocus: true,
               holder: "editor",
@@ -194,7 +206,7 @@ const startClerk = async () => {
               onChange: () => {
                 saveEditorData(documentId);
               },
-               tools: {
+              tools: {
                 header: {
                   class: Header,
                   inlineToolbar: true,
@@ -356,13 +368,16 @@ const startClerk = async () => {
 
       document.addEventListener("click", function (event) {
         // Check if the click target is not within publishMenu or publishBtn
-        if (!trashBox.contains(event.target) && event.target !== openTrash && event.target !== deleteConfirm) {
-            // Hide publishMenu
-            trashBox.style.display = "none";
+        if (
+          !trashBox.contains(event.target) &&
+          event.target !== openTrash &&
+          event.target !== deleteConfirm
+        ) {
+          // Hide publishMenu
+          trashBox.style.display = "none";
         }
+      });
     });
-    });
-
 
     const closeTrash = document.querySelector(".closeTrash");
     closeTrash.addEventListener("click", function (event) {
@@ -423,6 +438,7 @@ const startClerk = async () => {
                 navTitle.innerHTML = `${documents[0].title}`;
               }
             );
+            
             const editor = new EditorJS({
               holder: "editor",
               autofocus: true,
@@ -489,9 +505,25 @@ const startClerk = async () => {
             });
 
             const publishBtn = document.getElementById("publishBtn");
-            publishBtn.addEventListener("click", function () {
-              console.log("clicked bro");
-            });
+                      const publishTab =
+                        document.querySelector(".publish-tab");
+                      publishBtn.addEventListener("click", function (event) {
+                        event.stopPropagation();
+                        console.log("publish-down");
+                        publishTab.classList.remove("hidden");
+                        publishTab.classList.add("flex");
+                        document.addEventListener("click", function (event) {
+                          // Check if the click target is not within publishMenu or publishBtn
+                          if (
+                            !publishTab.contains(event.target) &&
+                            event.target !== publishBtn
+                          ) {
+                            // Hide publishMenu
+                            publishTab.classList.remove("flex");
+                            publishTab.classList.add("hidden");
+                          }
+                        });
+                      });
             function saveEditorData(documentId) {
               editor
                 .save()

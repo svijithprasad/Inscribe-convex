@@ -2208,6 +2208,10 @@ input.tab:checked + .tab-content,
   height: 13rem;
 }
 
+.min-h-7 {
+  min-height: 1.75rem;
+}
+
 .w-64 {
   width: 16rem;
 }
@@ -2276,6 +2280,14 @@ input.tab:checked + .tab-content,
   padding-top: 1.25rem;
 }
 
+.pl-5 {
+  padding-left: 1.25rem;
+}
+
+.pl-4 {
+  padding-left: 1rem;
+}
+
 .text-center {
   text-align: center;
 }
@@ -2308,9 +2320,22 @@ input.tab:checked + .tab-content,
   font-weight: 600;
 }
 
+.font-light {
+  font-weight: 300;
+}
+
+.font-normal {
+  font-weight: 400;
+}
+
 .text-\[\#737373\] {
   --tw-text-opacity: 1;
   color: rgb(115 115 115 / var(--tw-text-opacity));
+}
+
+.text-black {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
 .opacity-10 {
