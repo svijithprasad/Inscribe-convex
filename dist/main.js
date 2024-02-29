@@ -117,10 +117,13 @@ const startClerk = async () => {
               client
                 .query("documents:get", { id: documentId })
                 .then((documents) => {
-                  console.log("task:", documents[0]._id);
                   userspace.style.display = "none";
                   notespace.style.display = "block";
-                  navTitle.innerHTML = documents[0].title;
+                  navTitle.innerHTML = `${documents[0].title}`;
+                  client.onUpdate("documents:get", { id: documentId }, (documents) => {
+                    const dynamicTitle = documents[0].title;
+                    navTitle.innerHTML = `${dynamicTitle}`;
+                  });
                   publishMenu.innerHTML = "";
                   publishMenu.innerHTML += `
                 <div class="flex items-center fixed right-3 top-2">
