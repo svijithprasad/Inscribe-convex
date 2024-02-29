@@ -238,8 +238,10 @@ const startClerk = async () => {
               const documentId = button.dataset.documentId;
               const notespace = document.getElementById("note-space");
               const userspace = document.getElementById("user-space");
+              const navTitle = document.getElementById("navTitle");
               notespace.style.display = "none";
               userspace.style.display = "flex";
+              navTitle.innerHTML = "";
               deleteNote(documentId);
             });
           });
