@@ -195,28 +195,59 @@ const startClerk = async () => {
                 saveEditorData(documentId);
               },
               tools: {
-                paragraph: {
-                  class: Paragraph,
-                  inlineToolbar: true,
-                },
                 header: {
                   class: Header,
+                  inlineToolbar: true,
+                  config: {
+                    placeholder: "Enter a header",
+                    levels: [2, 3, 4],
+                    defaultLevel: 2,
+                  },
+                },
+                paragraph: {
+                  class: Paragraph,
                   inlineToolbar: true,
                 },
                 list: {
                   class: List,
                   inlineToolbar: true,
+                  config: {
+                    ordered: true,
+                    unordered: true,
+                  },
                 },
+                table: {
+                  class: Table,
+                  inlineToolbar: true,
+                  config: {
+                    rows: 2,
+                    cols: 3,
+                  },
+                },
+                warning: {
+                  class: Warning,
+                  inlineToolbar: true,
+                },
+                delimiter: Delimiter,
+                inlineCode: InlineCode,
                 checklist: {
                   class: Checklist,
                   inlineToolbar: true,
                 },
+                marker: {
+                  class: Marker,
+                  inlineToolbar: true,
+                },
                 embed: {
                   class: Embed,
-                },
-                image: {
-                  class: Image,
-                  inlineToolbar: true,
+                  config: {
+                    services: {
+                      youtube: true,
+                      vimeo: true,
+                      twitter: true,
+                      instagram: true,
+                    },
+                  },
                 },
               },
               data: parsedContent,
