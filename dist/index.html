@@ -1,123 +1,204 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="en" class="light scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Inscibe</title>
-    <link rel="stylesheet" href="style.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="https://unpkg.com/simplebar@5.3.0/dist/simplebar.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="output.css" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/simplebar@5.3.0/dist/simplebar.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+  </head>
 
-</head>
-
-<body>
-    <header id="mainHeader">
-        <div class="logo" id="logo-image">
-            <img class="logo-image" src="../public/info.png" alt="LOGO">
-            Inscribe
-        </div>
-
+  <body>
+    <div
+      class="navbar top-0 fixed text-primary bg-background dark:bg-background-dark dark:text-primary-dark z-[9999]"
+    >
+      <div class="flex-1 ml-4">
+        <a class="btn btn-ghost text-xl" href="">
+          <img class="logo-image" src="../public/info.png" alt="LOGO" />
+          Inscribe
+        </a>
+      </div>
+      <div class="flex-none">
         <div class="menu">
-            <ul class="menu-list">
-                <div class="spinner" id="loader">
-                    <div class="spinner-blade"></div>
-                    <div class="spinner-blade"></div>
-                    <div class="spinner-blade"></div>
-                    <div class="spinner-blade"></div>
-                    <div class="spinner-blade"></div>
-                    <div class="spinner-blade"></div>
-                    <div class="spinner-blade"></div>
-                    <div class="spinner-blade"></div>
-                    <div class="spinner-blade"></div>
-                    <div class="spinner-blade"></div>
-                    <div class="spinner-blade"></div>
-                    <div class="spinner-blade"></div>
-                </div>
-                <div id="auth-links" class="auth-links">
+          <ul class="menu-list">
+            <div class="spinner" id="loader">
+              <div class="spinner-blade"></div>
+              <div class="spinner-blade"></div>
+              <div class="spinner-blade"></div>
+              <div class="spinner-blade"></div>
+              <div class="spinner-blade"></div>
+              <div class="spinner-blade"></div>
+              <div class="spinner-blade"></div>
+              <div class="spinner-blade"></div>
+              <div class="spinner-blade"></div>
+              <div class="spinner-blade"></div>
+              <div class="spinner-blade"></div>
+              <div class="spinner-blade"></div>
+            </div>
+            <div id="auth-links" class="auth-links">
+              <div
+                id="loginButton1"
+                class="btn btn-ghost mr-3 hover:bg-secondary border-border dark:hover:bg-secondary-dark dark:border-border-dark text-primary dark:text-primary-dark"
+                onclick="Clerk.openSignIn()"
+              >
+                Log in
+              </div>
+              <div
+                id="loginButton2"
+                class="btn rounded bg-primary text-background hover:bg-secondary-dark dark:bg-primary-dark dark:text-primary"
+                onclick="Clerk.openSignIn()"
+              >
+                Get Inscribe Free
+              </div>
+            </div>
+            <a href="main.html"
+              ><button
+                class="btn btn-ghost mr-2 hover:bg-secondary dark:hover:bg-secondary-dark text-primary dark:text-primary-dark hidden"
+                id="enter1"
+              >
+                Enter Inscribe
+              </button></a
+            >
+            <div id="user-button" class="user-button"></div>
 
-                    <button id="loginButton1" class="classy-lightBtn" onclick="Clerk.openSignIn()">Log in</button>
-                    <button id="loginButton2" class="button" onclick="Clerk.openSignIn()" style="margin: 10px">Get
-                        Inscribe Free</button>
-                </div>
-                <a href="main.html"><button class="classy-enterBtn" id="enter1">Enter Inscribe</button></a>
-                <div id="user-button" class="user-button"></div>
+            <div
+              class="btn btn-ghost mr-3 hover:bg-secondary border-border dark:hover:bg-secondary-dark dark:border-secondary-dark ml-3 border w-12 h-10 text-lg flex items-center justify-center"
+              id="selectTheme"
+            >
+              <span class="flex items-center justify-center" id="selected"
+                ><i class="bx bx-sun"></i
+              ></span>
+            </div>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div
+      class="themeTabs bg-background dark:bg-background-dark border-border dark:border-border-dark border rounded fixed top-20 hidden items-center px-1 py-1 right-5 w-36 h-28 text-primary dark:text-primary-dark transition ease-in-out delay-0"
+      id="themes"
+    >
+      <div class="flex items-center w-full cursor-pointer">
+        <ul class="flex gap-1 flex-col w-full" id="themeList">
+          <li
+            id="light"
+            class="active hover:bg-secondary p-1 rounded dark:hover:bg-secondary-dark"
+          >
+            Light
+          </li>
+          <li
+            id="dark"
+            class="hover:bg-secondary p-1 rounded dark:hover:bg-secondary-dark"
+          >
+            Dark
+          </li>
+          <li
+            id="system"
+            class="hover:bg-secondary p-1 rounded dark:hover:bg-secondary-dark"
+          >
+            System
+          </li>
+        </ul>
+      </div>
+    </div>
 
-
-                <div class="light-dark-tab">
-                    <div class="select" id="selectTheme">
-                        <span class="selected" id="selected"><i class="bx bx-sun"></i></span>
-                        <ul class="themes" id="themeList">
-                            <li class="active">Light</li>
-                            <li>Dark</li>
-                            <li>System</li>
-                        </ul>
-                    </div>
-
-                </div>
-            </ul>
+    <main
+      class="bg-background dark:bg-background-dark overflow-x-hidden text-primary dark:text-primary-dark"
+    >
+      <div class="highlighters">
+        <div id="highlighters">
+          <img class="highlight" src="../public/topPeekI.avif" width="150px" alt="Looking Down" />
+        </div>
+      </div>
+      <div
+        class="w-full h-300 flex flex-col justify-center items-center select-none pt-44 box-border"
+      >
+        <div class="flex flex-col items-center justify-center">
+          <p class="text-6xl font-bold">Streamlined Note Management</p>
+          <p class="text-6xl font-bold">
+            for <span class="underline">Productivity</span>
+          </p>
         </div>
 
-    </header>
+        <span class="font-semibold text-2xl w-[660px] text-center mt-4 mb-4"
+          >Get Inscribe for Free and Elevate Your Productivity with Seamless
+          Note Management</span
+        >
 
-    <main>
-        <div class="highlighters">
-            <div id="highlighters">
-                <img src="../public/topPeekI.avif" width="150px" alt="Looking Down">
-            </div>
+        <div class="spinner center" id="loaderMain">
+          <div class="spinner-blade"></div>
+          <div class="spinner-blade"></div>
+          <div class="spinner-blade"></div>
+          <div class="spinner-blade"></div>
+          <div class="spinner-blade"></div>
+          <div class="spinner-blade"></div>
+          <div class="spinner-blade"></div>
+          <div class="spinner-blade"></div>
+          <div class="spinner-blade"></div>
+          <div class="spinner-blade"></div>
+          <div class="spinner-blade"></div>
+          <div class="spinner-blade"></div>
         </div>
-        <div class="main-container">
-            <p>Streamlined Note Management</p>
-            <p>for Productivity</p>
-            <span
-                style="font-weight: 500; font-size: 25px; width: 550px; text-align: center; margin-top: 20px; margin-bottom: 20px;">Get
-                Inscribe for Free and Elevate Your Productivity with Seamless Note Management</span>
 
-            <div class="spinner center" id="loaderMain">
-                <div class="spinner-blade"></div>
-                <div class="spinner-blade"></div>
-                <div class="spinner-blade"></div>
-                <div class="spinner-blade"></div>
-                <div class="spinner-blade"></div>
-                <div class="spinner-blade"></div>
-                <div class="spinner-blade"></div>
-                <div class="spinner-blade"></div>
-                <div class="spinner-blade"></div>
-                <div class="spinner-blade"></div>
-                <div class="spinner-blade"></div>
-                <div class="spinner-blade"></div>
-            </div>
-
-
-            <div id="mainBtnDiv"><button onclick="Clerk.openSignUp()" class="button" id="mainBtn">Get Inscribe Free<i
-                        class='bx bx-right-arrow-alt'></i></button></div>
+        <div id="mainBtnDiv">
+          <div
+            onclick="Clerk.openSignUp()"
+            class="btn rounded bg-primary text-background hover:bg-secondary-dark dark:bg-background dark:text-primary"
+            id="mainBtn"
+          >
+            Get Inscribe Free<i class="bx bx-right-arrow-alt"></i>
+          </div>
         </div>
-        <div class="main-container-img" id="container-img">
-            <img src="./../public/parade.png" width="600px" alt="documents">
+      </div>
+      <div class="main-container-img" id="container-img">
+        <img class="parade" src="../public/parade.png" width="600px" alt="documents" />
+      </div>
+      <footer>
+        <div class="footer-left flex items-center pl-7" id="footerlogo-image">
+          <img id="footer-logo-image" class="logo-image" src="../public/info.png" alt="LOGO" />
+          <span class="footer-logo pl-1 text-primary dark:text-primary-dark"
+            >Inscribe</span
+          >
         </div>
-        <footer>
-            <div class="footer-left" id="footerlogo-image">
-                <img class="logo-image" src="../public/info.png" alt="LOGO">
-                <span class="footer-logo">Inscribe</span>
-            </div>
-            <div class="footer-right">
-                <span class="classy-lightBtn">Privacy Policy</span>
-                <span class="classy-lightBtn">Terms and Conditions</span>
-            </div>
-        </footer>
+        <div class="footer-right pr-7">
+          <span
+            class="font-medium rounded-md border border-transparent ml-2 p-2 cursor-pointer hover:bg-secondary transition duration-200 ease-in-out bg-transparent text-sm w-20 h-14 text-secondary-dark dark:text-primary-dark dark:hover:bg-secondary-dark"
+            >Privacy Policy</span
+          >
+          <span
+            class="font-medium rounded-md border border-transparent ml-2 p-2 cursor-pointer hover:bg-secondary transition duration-200 ease-in-out bg-transparent text-sm w-20 h-14 text-secondary-dark dark:text-primary-dark dark:hover:bg-secondary-dark"
+            >Terms and Conditions</span
+          >
+        </div>
+      </footer>
     </main>
-    <img src="" alt="">
+    <img src="" alt="" />
     <script src="clerk.js" async crossorigin="anonymous"></script>
     <script defer src="script.js"></script>
     <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
     <script src="https://unpkg.com/simplebar@5.3.0/dist/simplebar.min.js"></script>
-</body>
+  </body>
 </html>

@@ -30,10 +30,10 @@ const startClerk = async () => {
     const userButton = document.getElementById("user-button");
 
     Clerk.addListener(({ user }) => {
-      authLinks.style.display = user ? "none" : "block";
+      authLinks.style.display = user ? "none" : "flex";
       enter1.style.display = user ? "block" : "none";
       mainBtn.innerHTML = user
-        ? '<a href="main.html" style="color: white;">Enter Inscribe <i class="bx bx-right-arrow-alt"></i></a>'
+        ? '<a href="main.html" class="dark:text-primary w-full h-full flex items-center justify-center">Enter Inscribe <i class="bx bx-right-arrow-alt"></i></a>'
         : 'Get Inscribe Free<i class="bx bx-right-arrow-alt"></i>';
     });
 

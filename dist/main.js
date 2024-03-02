@@ -16,7 +16,7 @@ const startClerk = async () => {
       if (Clerk.user) {
         console.log("user true");
       } else {
-        window.location.href = "index.html";
+        window.location.href = "/dist/";
       }
     }
 
