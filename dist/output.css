@@ -3289,6 +3289,14 @@ details.collapse summary::-webkit-details-marker {
   top: 5rem;
 }
 
+.top-28 {
+  top: 7rem;
+}
+
+.top-24 {
+  top: 6rem;
+}
+
 .z-\[99999\] {
   z-index: 99999;
 }
