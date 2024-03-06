@@ -128,3 +128,14 @@ document.addEventListener("DOMContentLoaded", function () {
     lastScrollTop = scrollTop;
   });
 });
+
+
+document.getElementById("featuresBtn").addEventListener("click", function() {
+  // Get the target div
+  var targetDiv = document.querySelector(".features-container-viewer");
+
+  // Scroll to the target div
+targetDiv.scrollIntoView({
+    behavior: 'smooth' // Smooth scrolling behavior
+  });
+});

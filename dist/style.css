@@ -566,3 +566,11 @@ main p {
 .themeTabs{
   transition: hidden ease-in 0.5s;
 }
+
+/* .gradient-text */
+.gradient-text {
+  background: linear-gradient(90deg, #FF0000, #833AB4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
