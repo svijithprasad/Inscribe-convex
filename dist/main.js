@@ -171,8 +171,13 @@ const startClerk = async () => {
                     "documents:get",
                     { id: documentId },
                     (documents) => {
-                      const wallpaper = document.getElementById("note-wallpaper")
-                      wallpaper.innerHTML = `<img class="h-52 w-full" src="${documents[0].coverImage}"/>`;
+                      const wallpaper =
+                        document.getElementById("note-wallpaper");
+                      if (documents[0].coverImage !== undefined) {
+                        wallpaper.innerHTML = `<img class="h-52 w-full" src="${documents[0].coverImage}"/>`;
+                      } else {
+                        wallpaper.innerHTML = "";
+                      }
                       const dynamicTitle = documents[0].title;
                       navTitle.innerHTML = `<p>${dynamicTitle}</p>`;
                     }
@@ -265,13 +270,13 @@ const startClerk = async () => {
                         }
                       });
 
-                      const imageUpload = document.getElementById("imageUpload");
+                      const imageUpload =
+                        document.getElementById("imageUpload");
                       imageUpload.addEventListener("change", (event) => {
                         uploadImage(event);
                         const documentId = iframe.dataset.documentId;
                         console.log(documentId);
-                      })
-
+                      });
 
                       const img = document.querySelector(".coverPreview");
                       const spinner = document.querySelector(".loader"); // Select the spinner element
@@ -313,9 +318,13 @@ const startClerk = async () => {
                                   spinner.style.display = "none"; // Hide spinner on successful upload
                                 }
                                 img.setAttribute("src", url);
-                                client.mutation("documents:setCover", {id: documentId, coverImage: url}, (document) => {
-                                  console.log(document);
-                                })
+                                client.mutation(
+                                  "documents:setCover",
+                                  { id: documentId, coverImage: url },
+                                  (document) => {
+                                    console.log(document);
+                                  }
+                                );
                               })
                               .catch((error) => {
                                 console.log(error);
