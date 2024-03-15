@@ -143,3 +143,15 @@ export const restore = mutation({
   },
 });
 
+export const setCover = mutation({
+  args: {
+    id: v.id("documents"),
+    coverImage: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const document = await ctx.db.patch(args.id, {
+      coverImage: args.coverImage,
+    });
+    return document;
+  },
+});

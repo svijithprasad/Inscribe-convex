@@ -24,6 +24,11 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+
+    <!-- firebase configs -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
+
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/convex@1.3.1/dist/browser.bundle.js"></script>
 
@@ -55,6 +60,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@editorjs/warning@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/@editorjs/link@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/@editorjs/image@latest"></script>
+
 
 
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
@@ -298,13 +304,15 @@
               <form method="dialog">
                 <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
               </form>
-              <h3 class="font-bold text-lg text-center">Cover Image</h3>
-              <div class="w-full h-60 px-3 py-3 border-dotted border-2 border-border rounded flex items-center justify-center cursor-pointer" onclick="document.getElementById('imageUpload').click()">
-                <input type="file" accept="image/*" id="imageUpload" style="display: none;">
-                <p>Click Here or Drop Image Here</p>
-            </div>
-            
-            
+              <h3 class="font-bold text-lg text-center pb-3">Cover Image</h3>
+              <div class="imageUpload" onclick="document.getElementById('imageUpload').click()">
+                <input type="file" accept="image/*" id="imageUpload" style="display: none;" >
+                <div class="w-full h-60 border-dotted border-2 border-border rounded flex items-center justify-center text-muted-foreground cursor-pointer">
+                  <p class="coverImgMessage">Click Here or Drop Image Here </p>
+                  <span class="loader"></span>
+                  <img class="coverPreview" src="" alt="">
+                  <!-- Spinner element --></div>
+              </div>
             </div>
           </dialog>
         </div>
@@ -344,73 +352,5 @@
 <script src="html2canvas.min.js"></script>
 <script src="html2pdf.min.js"></script>
 <script src="animate.js"></script>
-<script type="module">
-
-   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-    const coverImg = document.querySelector('.coverImg');
-    const my_modal_1 = document.getElementById('my_modal_1');
-
-    coverImg.addEventListener('click', () => {
-        my_modal_1.showModal();
-      });
-
-   
-
-
-
-
-
-const firebaseConfig = {
-
-  apiKey: "AIzaSyCXEueXJRuj-v2i2btuca8CWViM2AvsWX8",
-
-  authDomain: "inscribe-c57f9.firebaseapp.com",
-
-  projectId: "inscribe-c57f9",
-
-  storageBucket: "inscribe-c57f9.appspot.com",
-
-  messagingSenderId: "119733210559",
-
-  appId: "1:119733210559:web:d97a36be0c004d0cb1a50a",
-
-  measurementId: "G-M7ZPF4W19S"
-
-};
-
-
-// Initialize Firebase
-
-const app = initializeApp(firebaseConfig);
-
-
-
-var fileText = document.querySelector(".fileText");
-var fileItem;
-var fileName;
-function getFile(e){
-  fileItem = e.target.file[0];
-  fileName = fileItem.name;
-  fileText.innerHTML = fileName;
-  console.log();
-}
-
-function uploadImage(){
-  let storageRef = app.storage().ref("images/"+fileName);
-  let uploadTask = storageRef.put(fileItem);
-
-  uploadTask.on("state_changed", function(snapshot){
-      var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      console.log("Upload is " + progress + "% done");
-  },(error)=>{
-      console.log("Error is", error);
-  },()=>{
-      uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL){
-          console.log("File available at", downloadURL);
-      });
-  });
-}
-</script>
-
   </body>
 </html>

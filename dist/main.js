@@ -4,6 +4,23 @@ const startClerk = async () => {
   const Clerk = window.Clerk;
   const CONVEX_URL = "https://fantastic-alligator-877.convex.cloud";
   const client = new convex.ConvexClient(CONVEX_URL);
+  const firebaseConfig = {
+    apiKey: "AIzaSyCXEueXJRuj-v2i2btuca8CWViM2AvsWX8",
+
+    authDomain: "inscribe-c57f9.firebaseapp.com",
+
+    projectId: "inscribe-c57f9",
+
+    storageBucket: "inscribe-c57f9.appspot.com",
+
+    messagingSenderId: "119733210559",
+
+    appId: "1:119733210559:web:d97a36be0c004d0cb1a50a",
+
+    measurementId: "G-M7ZPF4W19S",
+  };
+  const app = firebase.initializeApp(firebaseConfig);
+  const storage = firebase.storage();
   try {
     const mainLoader = document.querySelector(".mainLoader");
     const mainId = document.getElementById("mainId");
@@ -154,6 +171,8 @@ const startClerk = async () => {
                     "documents:get",
                     { id: documentId },
                     (documents) => {
+                      const wallpaper = document.getElementById("note-wallpaper")
+                      wallpaper.innerHTML = `<img class="h-52 w-full" src="${documents[0].coverImage}"/>`;
                       const dynamicTitle = documents[0].title;
                       navTitle.innerHTML = `<p>${dynamicTitle}</p>`;
                     }
@@ -196,8 +215,6 @@ const startClerk = async () => {
                     }
                   });
 
-                  
-
                   client
                     .query("documents:getEditor", { id: documentId })
                     .then((documents) => {
@@ -236,6 +253,78 @@ const startClerk = async () => {
                           }
                         });
                       });
+
+                      const coverImg = document.querySelector(".coverImg");
+                      const my_modal_1 = document.getElementById("my_modal_1");
+
+                      coverImg.addEventListener("click", (event) => {
+                        my_modal_1.showModal();
+
+                        if (event.target.contains("closeModalBtn")) {
+                          my_modal_1.close();
+                        }
+                      });
+
+                      const imageUpload = document.getElementById("imageUpload");
+                      imageUpload.addEventListener("change", (event) => {
+                        uploadImage(event);
+                        const documentId = iframe.dataset.documentId;
+                        console.log(documentId);
+                      })
+
+
+                      const img = document.querySelector(".coverPreview");
+                      const spinner = document.querySelector(".loader"); // Select the spinner element
+                      const coverImgMessage =
+                        document.querySelector(".coverImgMessage");
+                      let file;
+                      let fileName;
+
+                      const uploadImage = (e) => {
+                        file = e.target.files[0];
+                        fileName = Math.round(Math.random() * 9999) + file.name;
+
+                        spinner.style.display = "block"; // Show spinner
+                        coverImgMessage.style.display = "none";
+
+                        const storageRef = storage
+                          .ref()
+                          .child("images/" + fileName); // Include the filename directly in the path
+                        const uploadTask = storageRef.put(file);
+
+                        uploadTask.on(
+                          "state_changed",
+                          null,
+                          (error) => {
+                            console.log(error);
+                            spinner.style.display = "none"; // Hide spinner on error
+                          },
+                          () => {
+                            storage
+                              .ref("images")
+                              .child(fileName)
+                              .getDownloadURL()
+                              .then((url) => {
+                                console.log("URL", url);
+                                if (!url) {
+                                  img.style.display = "none";
+                                } else {
+                                  img.style.display = "block";
+                                  spinner.style.display = "none"; // Hide spinner on successful upload
+                                }
+                                img.setAttribute("src", url);
+                                client.mutation("documents:setCover", {id: documentId, coverImage: url}, (document) => {
+                                  console.log(document);
+                                })
+                              })
+                              .catch((error) => {
+                                console.log(error);
+                                spinner.style.display = "none"; // Hide spinner on error
+                              });
+                            console.log("File Uploaded Successfully");
+                          }
+                        );
+                      };
                     })
                     .catch((error) => {
                       console.error("Error retrieving content:", error);
@@ -407,9 +496,14 @@ const startClerk = async () => {
                   <div class="ml-2 btn btn-ghost btn-sm "><i class="fa-solid fa-ellipsis"></i></div>
                 </div>`;
             notespace.innerHTML = "";
-            notespace.innerHTML += `          <div class="note-wallpaper" id="note-wallpaper"></div>
-            <div class="note-title"><input class="title-input" type="text" id="note-title" data-id="${documents[0]._id}" value="${documents[0].title}"></div>
-            <div id="editorjs" data-id="${documents[0]._id}"></div>`;
+            notespace.innerHTML += `          <div class="note-wallpaper" id="note-wallpaper">
+            <span class="fileText"></span>
+        </div>
+
+        <div class="note-title group">
+            <input class="title-input" type="text" id="note-title" data-id="${documents[0]._id}" value="${documents[0].title}">
+        </div>
+        <iframe src="editor.html" width="100%" height="100%" data-document-id="${documents[0]._id}"></iframe>`;
             const titleTextBox = document.getElementById("note-title");
             titleTextBox.value = documents[0].title;
             const documentId = titleTextBox.dataset.id;
@@ -596,13 +690,3 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
-
-// document.addEventListener("DOMContentLoaded", function () {
-//   const logoutBtn = document.getElementById("logoutBtn");
-//   function redirectTo(url) {
-//     window.Location.href = url;
-//   }
-//   logoutBtn.addEventListener("click", function () {
-//     redirectTo("/dist/index.html");
-//   });
-// });
