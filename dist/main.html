@@ -56,6 +56,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@editorjs/link@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/@editorjs/image@latest"></script>
 
+
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script
       defer
@@ -283,11 +284,30 @@
           </div>
         </div>
 
-
+        <div class="iconAndCover" style="display:none; position: absolute; left: 25%; top: 75px; opacity: 0.65; z-index: 50;">
+          <div class="btn btn-ghost btn-sm mr-3  hover:bg-secondary border-border dark:hover:bg-secondary-dark dark:border-border-dark"><span class="text-xs flex items-center"><i data-lucide="smile" class="w-4 h-4"></i>&nbsp; Add Icon</span></div>
+          <div class="coverImg btn btn-ghost btn-sm mr-3  hover:bg-secondary border-border dark:hover:bg-secondary-dark dark:border-border-dark"><span class="text-xs flex items-center"><i data-lucide="image" class="w-4 h-4"></i>&nbsp; Cover Image</span></div>
+      </div>
         <div class="note-space" id="note-space">
 
         </div>
-
+        <div class="coverModal">
+          <!-- You can open the modal using ID.showModal() method -->
+          <dialog id="my_modal_1" class="modal">
+            <div class="modal-box bg-primary-dark border border-border">
+              <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+              </form>
+              <h3 class="font-bold text-lg text-center">Cover Image</h3>
+              <div class="w-full h-60 px-3 py-3 border-dotted border-2 border-border rounded flex items-center justify-center cursor-pointer" onclick="document.getElementById('imageUpload').click()">
+                <input type="file" accept="image/*" id="imageUpload" style="display: none;">
+                <p>Click Here or Drop Image Here</p>
+            </div>
+            
+            
+            </div>
+          </dialog>
+        </div>
 
         <div class="deleteModal">
           <dialog id="my_modal_3" class="modal">
@@ -323,5 +343,74 @@
 <script src="jspdf.debug.js"></script>
 <script src="html2canvas.min.js"></script>
 <script src="html2pdf.min.js"></script>
+<script src="animate.js"></script>
+<script type="module">
+
+   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+    const coverImg = document.querySelector('.coverImg');
+    const my_modal_1 = document.getElementById('my_modal_1');
+
+    coverImg.addEventListener('click', () => {
+        my_modal_1.showModal();
+      });
+
+   
+
+
+
+
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyCXEueXJRuj-v2i2btuca8CWViM2AvsWX8",
+
+  authDomain: "inscribe-c57f9.firebaseapp.com",
+
+  projectId: "inscribe-c57f9",
+
+  storageBucket: "inscribe-c57f9.appspot.com",
+
+  messagingSenderId: "119733210559",
+
+  appId: "1:119733210559:web:d97a36be0c004d0cb1a50a",
+
+  measurementId: "G-M7ZPF4W19S"
+
+};
+
+
+// Initialize Firebase
+
+const app = initializeApp(firebaseConfig);
+
+
+
+var fileText = document.querySelector(".fileText");
+var fileItem;
+var fileName;
+function getFile(e){
+  fileItem = e.target.file[0];
+  fileName = fileItem.name;
+  fileText.innerHTML = fileName;
+  console.log();
+}
+
+function uploadImage(){
+  let storageRef = app.storage().ref("images/"+fileName);
+  let uploadTask = storageRef.put(fileItem);
+
+  uploadTask.on("state_changed", function(snapshot){
+      var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      console.log("Upload is " + progress + "% done");
+  },(error)=>{
+      console.log("Error is", error);
+  },()=>{
+      uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL){
+          console.log("File available at", downloadURL);
+      });
+  });
+}
+</script>
+
   </body>
 </html>

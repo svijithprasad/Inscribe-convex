@@ -14,7 +14,7 @@ const startClerk = async () => {
     const userNameMain = document.querySelector(".userNameMain");
     function checkUser() {
       if (Clerk.user) {
-        console.log("user true");
+        return;
       } else {
         window.location.href = "/dist/";
       }
@@ -111,7 +111,8 @@ const startClerk = async () => {
 
           // Add click event listener to each document title
           documentTitles.forEach((title) => {
-            title.addEventListener("click", function () {
+            title.addEventListener("click", function (event) {
+              event.stopPropagation();
               // Remove "active" class from all document titles
               documentTitles.forEach((t) => {
                 t.classList.remove("active");
@@ -167,20 +168,52 @@ const startClerk = async () => {
                 </div>`;
 
                   notespace.innerHTML = `
-                            <div class="note-wallpaper" id="note-wallpaper">
-                            <input type="file" accept="image/*" id="wallpaper" class="hidden">
-                            </div>
-                            <div class="note-title">
-                                <input class="title-input" type="text" id="note-title" data-id="${documents[0]._id}" value="${documents[0].title}">
-                            </div>
-                            <div id="editorjs" data-document-id="${documents[0]._id}"></div>`;
+                  <div class="note-wallpaper" id="note-wallpaper">
+                  <span class="fileText"></span>
+              </div>
+
+              <div class="note-title group">
+                  <input class="title-input" type="text" id="note-title" data-id="${documents[0]._id}" value="${documents[0].title}">
+              </div>
+              <iframe src="editor.html" width="100%" height="100%" data-document-id="${documents[0]._id}"></iframe>
+              `;
+
+                  const iconAndCover = document.querySelector(".iconAndCover");
+                  const notetitle = document.querySelector(".note-title");
+
+                  document.addEventListener("mouseover", function (event) {
+                    const isMouseOverNotetitle = notetitle.contains(
+                      event.target
+                    );
+                    const isMouseOverIconAndCover = iconAndCover.contains(
+                      event.target
+                    );
+
+                    if (!isMouseOverNotetitle && !isMouseOverIconAndCover) {
+                      iconAndCover.style.display = "none";
+                    } else {
+                      iconAndCover.style.display = "flex";
+                    }
+                  });
+
+                  
+
                   client
                     .query("documents:getEditor", { id: documentId })
                     .then((documents) => {
                       const content = documents[0].content;
-                      console.log(content);
-                      const parsedContent = content ? JSON.parse(content) : {};
 
+                      const parsedContent = content ? JSON.parse(content) : {};
+                      const iframe = document.querySelector("iframe");
+                      let contentSent = false;
+                      if (!contentSent) {
+                        const message = {
+                          content: parsedContent,
+                          documentId: documentId,
+                        };
+                        iframe.contentWindow.postMessage(message);
+                        contentSent = true;
+                      }
                       // Initialize EditorJS inside the promise callback
                       initializeEditor(parsedContent, documentId);
 
@@ -218,82 +251,6 @@ const startClerk = async () => {
           });
 
           function initializeEditor(parsedContent, documentId) {
-            const editor = new EditorJS({
-              autofocus: true,
-              holder: "editorjs",
-              placeholder: "Start typing...",
-              onChange: () => {
-                saveEditorData(documentId);
-              },
-              tools: {
-                header: {
-                  class: Header,
-                  inlineToolbar: true,
-                  config: {
-                    placeholder: 'Enter a header',
-                    levels: [2, 3, 4],
-                    defaultLevel: 2,
-                  },
-                },
-                paragraph: {
-                  class: Paragraph,
-                  inlineToolbar: true,
-                },
-                list: {
-                  class: List,
-                  inlineToolbar: true,
-                  config: {
-                    ordered: true,
-                    unordered: true,
-                  },
-                },
-                table: {
-                  class: Table,
-                  inlineToolbar: true,
-                  config: {
-                    rows: 2,
-                    cols: 3,
-                  },
-                },
-                embed: {
-                  class: Embed,
-                  inlineToolbar: true,
-                },
-                inlineCode: {
-                  class: InlineCode,
-                  inlineToolbar: true,
-                },
-                checklist: {
-                  class: Checklist,
-                  inlineToolbar: true,
-                },
-                marker: {
-                  class: Marker,
-                  inlineToolbar: true,
-                },
-                quote: {
-                  class: Quote,
-                },
-                delimiter: {
-                  class: Delimiter,
-                  inlineToolbar: true,
-                },
-                warning: {
-                  class: Warning,
-                },
-                image: {
-                  class: Image,
-                  config: {
-                    endpoints: {
-                      byFile: "https://api.imgur.com/v3/upload",
-                      byUrl: "https://api.imgur.com/v3/parse",
-                    }
-                  }
-                }
-              },
-              data: parsedContent,
-            });
-
             const titleTextBox = document.getElementById("note-title");
             titleTextBox.addEventListener("input", function () {
               const documentId = titleTextBox.dataset.id;
@@ -483,7 +440,7 @@ const startClerk = async () => {
                   class: Header,
                   inlineToolbar: true,
                   config: {
-                    placeholder: 'Enter a header',
+                    placeholder: "Enter a header",
                     levels: [2, 3, 4],
                     defaultLevel: 2,
                   },
@@ -524,9 +481,9 @@ const startClerk = async () => {
                   class: Marker,
                   inlineToolbar: true,
                 },
-                image : {
-                  class : Image,
-                  inlineToolbar : true,
+                image: {
+                  class: Image,
+                  inlineToolbar: true,
                 },
               },
             });
@@ -624,7 +581,6 @@ function isNotResetting() {
   mainBar.style.marginLeft = "250px";
   aside.style.width = "250px";
 }
-
 
 document.addEventListener("DOMContentLoaded", function () {
   const userItem = document.getElementById("user-item");

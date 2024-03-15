@@ -1,61 +1,115 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EditorJS Example</title>
-  <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@editorjs/table@latest"></script>
-
-</head>
-<body>
-  <div id="editorjs"></div>
-  <button id="save-button">Save Content</button>
-  <script>
-    const editor = new EditorJS({
-      holder: 'editorjs',
-      onChange: () => { // Corrected from onchange to onChange
-        saveEditorData();
-      },
-      tools : {
-        header: {
-          class: Header,
-        },
-        list: {
-          class: List,
-        },
-        table: {
-          class: Table,
-          inlineToolbar: true,
-          config: {
-            rows: 3,
-            cols: 3,
-          },
-        }
-      },
-
-      data: {
-        // Your initial data
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EditorJS Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
+    <!-- Tools -->
+    <!-- Header Tool -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
+    <!-- List Tool -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
+    <!-- Paragraph Tool -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/paragraph@latest"></script>
+    <!-- Table Tool -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/table@2.3.0/dist/table.umd.min.js"></script>
+    <!-- Embed Tool -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/embed@latest"></script>
+    <!-- InlineCode Tool -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/inline-code@latest"></script>
+    <!-- Checklist Tool -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/checklist@latest"></script>
+    <!-- Marker Tool -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/marker@latest"></script>
+    <!-- Quote Tool -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/quote@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/simple-image@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/delimiter@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/warning@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/link@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/image@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/convex@1.3.1/dist/browser.bundle.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", sans-serif;
       }
-    });
 
-    // Function to save editor data and handle potential errors
-    function saveEditorData() {
-      editor.save()
-        .then((data) => {
-          console.log('Saved data:', data);
-        })
-        .catch((error) => {
-          console.error('Saving failed:', error);
-        });
-    }
+    </style>
+  </head>
+  <body>
+    <div id="editorjs" class="w-[110%] h-full"></div>
 
-    // Button or event listener to trigger save functionality
-    const saveButton = document.getElementById('save-button'); // Assuming a button exists with this ID
-    saveButton.addEventListener('click', saveEditorData);
+    <script>
+      const CONVEX_URL = "https://fantastic-alligator-877.convex.cloud";
+      const convexClient = new convex.ConvexClient(CONVEX_URL);
+      let editor = null;
+      let currentDocumentId = null; // Define a variable to store the current documentId
 
-  </script>
-</body>
+      window.addEventListener("message", (event) => {
+        const { content, documentId } = event.data;
+        console.log("message", content, documentId);
+        if (!editor && content && documentId) {
+          editor = new EditorJS({
+            holder: "editorjs",
+            autofocus: true,
+            onChange: () => {
+              // No argument expected in onChange
+              saveEditorData(); // Call saveEditorData without arguments
+            },
+
+            tools: {
+              header: { class: Header },
+              list: { class: List },
+              table: {
+                class: Table,
+                inlineToolbar: true,
+                config: { rows: 3, cols: 3 },
+              },
+              embed: { class: Embed },
+              inlineCode: { class: InlineCode },
+              checklist: { class: Checklist },
+              marker: { class: Marker },
+              quote: { class: Quote },
+              simpleImage: { class: SimpleImage },
+              delimiter: { class: Delimiter },
+              warning: { class: Warning },
+              image: { class: Image },
+            },
+            data: content,
+          });
+          currentDocumentId = documentId; // Store the current documentId
+        }
+      });
+
+      function saveEditorData() {
+        editor
+          .save()
+          .then((data) => {
+            const editorContent = JSON.stringify(data);
+            console.log("Saved data:", editorContent);
+            console.log(typeof editorContent);
+            convexClient.mutation(
+              "documents:saveEditor",
+              { id: currentDocumentId, content: editorContent }, // Use the currentDocumentId
+              (documents) => {
+                console.log("task:", documents);
+              }
+            );
+          })
+          .catch((error) => {
+            console.error("Saving failed:", error);
+          });
+      }
+    </script>
+  </body>
 </html>

@@ -755,3 +755,8 @@ aside {
   cursor: pointer;
   width: 100%;
 }
+
+.note-title:hover + .iconAndCover,
+.iconAndCover:hover {
+    display: flex;
+}
