@@ -150,15 +150,15 @@ const startClerk = async () => {
               const publishMenu = document.querySelector(".publish-Menu");
               publishMenu.style.display = "flex";
               // Display skeleton loading animation
-              notespace.innerHTML = `
-                    <div class="flex flex-col p-3 gap-2">
-                        <div class="skeleton h-52 w-full bg-[#666666] opacity-10"></div>
-                        <div class="flex flex-col w-[800px] ml-[250px] gap-2">
-                            <div class="skeleton h-4  bg-[#666666] opacity-10"></div>
-                            <div class="skeleton h-4  bg-[#666666] opacity-10"></div>
-                            <div class="skeleton h-4  bg-[#666666] opacity-10"></div>
-                        </div>
-                    </div>`;
+              // notespace.innerHTML = `
+              //       <div class="flex flex-col p-3 gap-2">
+              //           <div class="skeleton h-52 w-full bg-[#666666] opacity-10"></div>
+              //           <div class="flex flex-col w-[800px] ml-[250px] gap-2">
+              //               <div class="skeleton h-4  bg-[#666666] opacity-10"></div>
+              //               <div class="skeleton h-4  bg-[#666666] opacity-10"></div>
+              //               <div class="skeleton h-4  bg-[#666666] opacity-10"></div>
+              //           </div>
+              //       </div>`;
 
               client
                 .query("documents:get", { id: documentId })
@@ -220,125 +220,35 @@ const startClerk = async () => {
                     }
                   });
 
-                  client
-                    .query("documents:getEditor", { id: documentId })
-                    .then((documents) => {
-                      const content = documents[0].content;
+                  const iframe = document.querySelector("iframe");
+                  iframe.addEventListener("load", function () {
+                    const documentId = iframe.dataset.documentId;
+                    console.log("iframe loaded");
+                    iframe.contentWindow.postMessage({ documentId }, "*");
+                  });
 
-                      const parsedContent = content ? JSON.parse(content) : {};
-                      const iframe = document.querySelector("iframe");
-                      let contentSent = false;
-                      if (!contentSent) {
-                        const message = {
-                          content: parsedContent,
-                          documentId: documentId,
-                        };
-                        iframe.contentWindow.postMessage(message);
-                        contentSent = true;
+                  // Initialize EditorJS inside the promise callback
+                  initializeEditor(documentId);
+
+                  const publishBtn = document.getElementById("publishBtn");
+                  const publishTab = document.querySelector(".publish-tab");
+                  publishBtn.addEventListener("click", function (event) {
+                    event.stopPropagation();
+                    console.log("publish-up");
+                    publishTab.classList.remove("hidden");
+                    publishTab.classList.add("flex");
+                    document.addEventListener("click", function (event) {
+                      // Check if the click target is not within publishMenu or publishBtn
+                      if (
+                        !publishTab.contains(event.target) &&
+                        event.target !== publishBtn
+                      ) {
+                        // Hide publishMenu
+                        publishTab.classList.remove("flex");
+                        publishTab.classList.add("hidden");
                       }
-                      // Initialize EditorJS inside the promise callback
-                      initializeEditor(parsedContent, documentId);
-
-                      const publishBtn = document.getElementById("publishBtn");
-                      const publishTab = document.querySelector(".publish-tab");
-                      publishBtn.addEventListener("click", function (event) {
-                        event.stopPropagation();
-                        console.log("publish-up");
-                        publishTab.classList.remove("hidden");
-                        publishTab.classList.add("flex");
-                        document.addEventListener("click", function (event) {
-                          // Check if the click target is not within publishMenu or publishBtn
-                          if (
-                            !publishTab.contains(event.target) &&
-                            event.target !== publishBtn
-                          ) {
-                            // Hide publishMenu
-                            publishTab.classList.remove("flex");
-                            publishTab.classList.add("hidden");
-                          }
-                        });
-                      });
-
-                      const coverImg = document.querySelector(".coverImg");
-                      const my_modal_1 = document.getElementById("my_modal_1");
-
-                      coverImg.addEventListener("click", (event) => {
-                        my_modal_1.showModal();
-
-                        if (event.target.contains("closeModalBtn")) {
-                          my_modal_1.close();
-                        }
-                      });
-
-                      const imageUpload =
-                        document.getElementById("imageUpload");
-                      imageUpload.addEventListener("change", (event) => {
-                        uploadImage(event);
-                        const documentId = iframe.dataset.documentId;
-                        console.log(documentId);
-                      });
-
-                      const img = document.querySelector(".coverPreview");
-                      const spinner = document.querySelector(".loader"); // Select the spinner element
-                      const coverImgMessage =
-                        document.querySelector(".coverImgMessage");
-                      let file;
-                      let fileName;
-
-                      const uploadImage = (e) => {
-                        file = e.target.files[0];
-                        fileName = Math.round(Math.random() * 9999) + file.name;
-
-                        spinner.style.display = "block"; // Show spinner
-                        coverImgMessage.style.display = "none";
-
-                        const storageRef = storage
-                          .ref()
-                          .child("images/" + fileName); // Include the filename directly in the path
-                        const uploadTask = storageRef.put(file);
-
-                        uploadTask.on(
-                          "state_changed",
-                          null,
-                          (error) => {
-                            console.log(error);
-                            spinner.style.display = "none"; // Hide spinner on error
-                          },
-                          () => {
-                            storage
-                              .ref("images")
-                              .child(fileName)
-                              .getDownloadURL()
-                              .then((url) => {
-                                console.log("URL", url);
-                                if (!url) {
-                                  img.style.display = "none";
-                                } else {
-                                  img.style.display = "block";
-                                  spinner.style.display = "none"; // Hide spinner on successful upload
-                                }
-                                img.setAttribute("src", url);
-                                client.mutation(
-                                  "documents:setCover",
-                                  { id: documentId, coverImage: url },
-                                  (document) => {
-                                    console.log(document);
-                                  }
-                                );
-                              })
-                              .catch((error) => {
-                                console.log(error);
-                                spinner.style.display = "none"; // Hide spinner on error
-                              });
-                            console.log("File Uploaded Successfully");
-                          }
-                        );
-                      };
-                    })
-                    .catch((error) => {
-                      console.error("Error retrieving content:", error);
-                      notespace.innerHTML = `<div>Error retrieving content</div>`;
                     });
+                  });
                 })
 
                 .catch((error) => {
@@ -348,10 +258,9 @@ const startClerk = async () => {
             });
           });
 
-          function initializeEditor(parsedContent, documentId) {
+          function initializeEditor(documentId) {
             const titleTextBox = document.getElementById("note-title");
             titleTextBox.addEventListener("input", function () {
-              const documentId = titleTextBox.dataset.id;
               const titleValue = titleTextBox.value.trim(); // Trim whitespace
 
               // If titleValue is empty, set it to "Untitled", otherwise use the current value
@@ -365,25 +274,6 @@ const startClerk = async () => {
                 }
               );
             });
-
-            function saveEditorData(documentId) {
-              editor
-                .save()
-                .then((data) => {
-                  const content = JSON.stringify(data);
-                  console.log("Saved data:", content);
-                  client.mutation(
-                    "documents:saveEditor",
-                    { id: documentId, content: content },
-                    (documents) => {
-                      console.log("task:", documents);
-                    }
-                  );
-                })
-                .catch((error) => {
-                  console.error("Saving failed:", error);
-                });
-            }
           }
 
           const deleteDocumentButtons =
