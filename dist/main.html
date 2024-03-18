@@ -102,7 +102,7 @@
           </div>
         </div>
         <div class="options">
-        <div class="search-item">
+        <div class="search-item" onclick=" my_modal_2.showModal();">
           <i
             data-lucide="search"
             height="18px"
@@ -117,7 +117,7 @@
               margin-left: 8px;
             "
           >
-            Search
+            Search <p class="pl-24"><kbd class="kbd rounded-sm kbd-sm px-1 text-xs text-muted-foreground border-border ">ALT K</kbd></p>
           </p>
         </div>
 
@@ -136,7 +136,7 @@
               margin-left: 8px;
             "
           >
-            Settings
+            Settings <p class="pl-[88px]"><kbd class="kbd rounded-sm px-1 kbd-sm text-xs text-muted-foreground border-border ">ALT J</kbd></p>
           </p>
         </div>
 
@@ -317,6 +317,27 @@
           </dialog>
         </div>
 
+        <div class="searchModal">
+          <dialog id="my_modal_2" class="modal">
+            <div class="modal-box bg-primary-dark border border-border">
+              <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 closeModalBtn">✕</button>
+              </form>
+              <p class="font-bold text-lg text-center">Search documents</p>
+              <div class=" flex justify-center items-center gap-2">
+                <div class="flex justify-center items-center">
+                  <i data-lucide="search" class="text-muted-foreground h-5 w-5"></i>
+                </div>
+                <input class="w-[80%] outline-none border-border" type="text" id="searchInput"  placeholder="Search here...">
+              </div>
+
+
+              <div class="searchResults mt-4" id="searchResults">
+              </div>
+            </div>
+          </dialog>
+        </div>
+
         <div class="deleteModal">
           <dialog id="my_modal_3" class="modal">
             <div class="modal-box bg-primary-dark border border-border">
@@ -352,5 +373,6 @@
 <script src="html2canvas.min.js"></script>
 <script src="html2pdf.min.js"></script>
 <script src="animate.js"></script>
+<script src="searchDocs.js"></script>
   </body>
 </html>

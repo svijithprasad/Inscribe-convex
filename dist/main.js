@@ -39,6 +39,7 @@ const startClerk = async () => {
 
     setInterval(checkUser, 100);
     if (Clerk.user) {
+      localStorage.setItem("userId", Clerk.user.id);
       const userEmail = document.getElementById("user-email");
       const DropDownImg = document.getElementById("user-dropdown-image");
       const DropDownName = document.getElementById("user-dropdown-name");

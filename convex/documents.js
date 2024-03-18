@@ -155,3 +155,19 @@ export const setCover = mutation({
     return document;
   },
 });
+
+
+export const searchDocs = query({
+  args:{
+    userId: v.string(),
+    searchValue: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const documents = await ctx.db
+      .query("documents")
+      .filter((q) => q.eq(q.field("userId"), args.userId))
+      .filter((q) => q.eq(q.field("title"), args.searchValue))
+      .collect();
+    return documents;
+  }
+})
