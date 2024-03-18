@@ -121,7 +121,7 @@
           </p>
         </div>
 
-        <div class="settings-item">
+        <div class="settings-item" onclick=" my_modal_4.showModal();">
           <i
             data-lucide="settings"
             height="18px"
@@ -232,7 +232,7 @@
         <div class="p-1">
           <div
             id="logoutBtn"
-            class="btn-ghost h-7 rounded-md w-full flex items-center cursor-pointer"
+            class="btn-ghost h-7 rounded-md w-full flex items-center cursor-pointer hover:bg-secondary"
             onclick="Clerk.signOut()"
           >
             <p class="pl-2 text-gray-700">Logout</p>
@@ -350,6 +350,77 @@
             </div>
           </dialog>
         </div>
+        <div class="settingsModal">
+          <dialog id="my_modal_4" class="modal">
+            <div class="modal-box bg-primary-dark border border-border">
+              <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 closeModalBtn">✕</button>
+              </form>
+              <div class="p-4 flex flex-col">
+
+                <h3 class="font-bold text-lg">My settings</h3>
+
+                <div class="border-t border-gray-300 my-4"></div>
+
+
+                <div class="flex items-center justify-between">
+                  <div class="flex flex-col">
+                    <h5 class="font-semibold">Appearance</h5>
+                    <span class="text-xs font-medium text-muted-foreground">Customize how Inscribe looks on your device</span>
+                  </div>
+                  <div class="flex items-center">
+                    <div
+                      class="btn btn-ghost mr-3 hover:bg-secondary  dark:hover:bg-secondary-dark dark:border-secondary-dark ml-3 border w-12 h-10 text-lg flex items-center justify-center"
+                      id="selectTheme"
+                    >
+                    <span class="flex items-center justify-center" id="selected"
+                      ><i class="bx bx-sun"></i
+                    ></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between mt-4">
+                  <div class="flex flex-col">
+                    <h5 class="font-semibold">User Account Settings</h5>
+                    <span class="text-xs font-medium text-muted-foreground">Modify your user account</span>
+                  </div>
+
+                  <div id="userSettings" class="pr-5 flex items-center cursor-pointer" onclick="Clerk.openUserProfile()">
+                  </div>
+                </div>
+                <div
+      class="themeTabs bg-background dark:bg-background-dark border-border dark:border-border-dark border rounded absolute hidden items-center px-1 py-1 right-28 w-36 h-28 text-primary dark:text-primary-dark transition ease-in-out delay-0 z-[99999]"
+      id="themes"
+    >
+      <div class="flex items-center w-full cursor-pointer">
+        <ul class="flex gap-1 flex-col w-full" id="themeList">
+          <li
+            id="light"
+            class="active hover:bg-secondary p-1 rounded dark:hover:bg-secondary-dark"
+          >
+            Light
+          </li>
+          <li
+            id="dark"
+            class="hover:bg-secondary p-1 rounded dark:hover:bg-secondary-dark"
+          >
+            Dark
+          </li>
+          <li
+            id="system"
+            class="hover:bg-secondary p-1 rounded dark:hover:bg-secondary-dark"
+          >
+            System
+          </li>
+        </ul>
+      </div>
+    </div>
+              </div>
+
+            </div>
+          </dialog>
+        </div>
       </div>
     </main>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -374,5 +445,7 @@
 <script src="html2pdf.min.js"></script>
 <script src="animate.js"></script>
 <script src="searchDocs.js"></script>
+<script src="settings.js"></script>
+
   </body>
 </html>

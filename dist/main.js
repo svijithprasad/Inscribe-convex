@@ -24,6 +24,7 @@ const startClerk = async () => {
   try {
     const mainLoader = document.querySelector(".mainLoader");
     const mainId = document.getElementById("mainId");
+    const userSettings = document.getElementById("userSettings");
     mainId.style.display = "none";
     mainLoader.style.display = "flex";
     await Clerk.load();
@@ -39,6 +40,7 @@ const startClerk = async () => {
 
     setInterval(checkUser, 100);
     if (Clerk.user) {
+      userSettings.innerHTML = `<div><img src=${Clerk.user.imageUrl}  style='border-radius: 50%; width: 30px; height: 30px;'></div>`;
       localStorage.setItem("userId", Clerk.user.id);
       const userEmail = document.getElementById("user-email");
       const DropDownImg = document.getElementById("user-dropdown-image");
