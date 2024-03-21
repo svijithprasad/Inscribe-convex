@@ -72,6 +72,9 @@
     <!-- pdf scripts -->
     <script src="https://cdnjs/cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.14.0/cdn/components/tab-group/tab-group.js"></script>
   </head>
     <div class="mainLoader">
       <div class="spinner" id="loader">
@@ -292,29 +295,10 @@
 
         <div class="iconAndCover" style="display:none; position: absolute; left: 25%; top: 75px; opacity: 0.65; z-index: 50;">
           <div class="btn btn-ghost btn-sm mr-3  hover:bg-secondary border-border dark:hover:bg-secondary-dark dark:border-border-dark"><span class="text-xs flex items-center"><i data-lucide="smile" class="w-4 h-4"></i>&nbsp; Add Icon</span></div>
-          <div class="coverImg btn btn-ghost btn-sm mr-3  hover:bg-secondary border-border dark:hover:bg-secondary-dark dark:border-border-dark"><span class="text-xs flex items-center"><i data-lucide="image" class="w-4 h-4"></i>&nbsp; Cover Image</span></div>
+          <div onclick="my_modal_5.showModal()" class="coverImg btn btn-ghost btn-sm mr-3  hover:bg-secondary border-border dark:hover:bg-secondary-dark dark:border-border-dark"><span class="text-xs flex items-center"><i data-lucide="image" class="w-4 h-4"></i>&nbsp; Cover Image</span></div>
       </div>
         <div class="note-space" id="note-space">
 
-        </div>
-        <div class="coverModal">
-          <!-- You can open the modal using ID.showModal() method -->
-          <dialog id="my_modal_1" class="modal">
-            <div class="modal-box bg-primary-dark border border-border">
-              <form method="dialog">
-                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-              </form>
-              <h3 class="font-bold text-lg text-center pb-3">Cover Image</h3>
-              <div class="imageUpload" onclick="document.getElementById('imageUpload').click()">
-                <input type="file" accept="image/*" id="imageUpload" style="display: none;" >
-                <div class="w-full h-60 border-dotted border-2 border-border rounded flex items-center justify-center text-muted-foreground cursor-pointer">
-                  <p class="coverImgMessage">Click Here or Drop Image Here </p>
-                  <span class="loader"></span>
-                  <img class="coverPreview" src="" alt="">
-                  <!-- Spinner element --></div>
-              </div>
-            </div>
-          </dialog>
         </div>
 
         <div class="searchModal">
@@ -421,6 +405,33 @@
             </div>
           </dialog>
         </div>
+
+        <div class="coverImgModal">
+          <dialog id="my_modal_5" class="modal">
+            <div class="modal-box bg-primary-dark border border-border">
+              <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 closeModalBtn">✕</button>
+              </form>
+              <h2 class="font-bold text-sm text-center text-primary">Choose how you want to add the cover image</h2>
+
+              <div class="border-t border-gray-300 my-4"></div>
+              <div class="p-8">
+                <sl-tab-group>
+                  <sl-tab slot="nav" panel="general" class="text-primary">Local Upload</sl-tab>
+                  <sl-tab slot="nav" panel="custom">Unsplash</sl-tab>
+
+
+                  <sl-tab-panel name="general">
+
+                  </sl-tab-panel>
+                  <sl-tab-panel name="custom">This is the custom tab panel.</sl-tab-panel>
+
+                </sl-tab-group>
+
+              </div>
+            </div>
+          </dialog>
+        </div>
       </div>
     </main>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -446,6 +457,6 @@
 <script src="animate.js"></script>
 <script src="searchDocs.js"></script>
 <script src="settings.js"></script>
-
+<script src="unsplashAPI.js"></script>
   </body>
 </html>
