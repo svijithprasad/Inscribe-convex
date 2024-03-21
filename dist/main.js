@@ -193,7 +193,7 @@ const startClerk = async () => {
               <div class="note-title group">
                   <input class="title-input" type="text" id="note-title" data-id="${documents[0]._id}" value="${documents[0].title}">
               </div>
-              <iframe src="editor.html" width="100%" height="100%" data-document-id="${documents[0]._id}"></iframe>
+              <iframe id="iframe" src="editor.html" width="100%" height="100%" data-document-id="${documents[0]._id}"></iframe>
               `;
 
                   const iconAndCover = document.querySelector(".iconAndCover");
@@ -389,14 +389,8 @@ const startClerk = async () => {
                   <div class="ml-2 btn btn-ghost btn-sm "><i class="fa-solid fa-ellipsis"></i></div>
                 </div>`;
             notespace.innerHTML = "";
-            notespace.innerHTML += `          <div class="note-wallpaper" id="note-wallpaper">
-            <span class="fileText"></span>
-        </div>
-
-        <div class="note-title group">
-            <input class="title-input" type="text" id="note-title" data-id="${documents[0]._id}" value="${documents[0].title}">
-        </div>
-        <iframe src="editor.html" width="100%" height="100%" data-document-id="${documents[0]._id}"></iframe>`;
+            notespace.innerHTML += `
+        <iframe id="iframe" src="editor.html" width="100%" height="100%" data-document-id="${documents[0]._id}"></iframe>`;
         const iframe = document.querySelector("iframe");
         iframe.addEventListener("load", function () {
           const documentId = iframe.dataset.documentId;
@@ -422,7 +416,7 @@ const startClerk = async () => {
               }
             );
 
-            
+
 
             const publishBtn = document.getElementById("publishBtn");
             const publishTab = document.querySelector(".publish-tab");

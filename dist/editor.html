@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EditorJS Example</title>
-  <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EditorJS Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
     <!-- Tools -->
     <!-- Header Tool -->
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
@@ -29,126 +29,129 @@
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/warning@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/link@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/image@latest"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/convex@1.3.1/dist/browser.bundle.js"></script>
 
-  <script src="https://unpkg.com/convex@1.3.1/dist/browser.bundle.js"></script>
-
-
-  <style>
-    * {
+    <style>
+      * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
         font-family: "Inter", sans-serif;
       }
 
-      .ce-block__content{
+      .ce-block__content {
         width: 100%;
       }
 
       .notes-container {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .note {
+        width: 700px;
+        height: 18px;
+        border-radius: 8px;
+        background-color: hsl(240, 4.8%, 95.9%);
+        animation: pulsate 1.5s ease-in-out infinite alternate;
+      }
+
+      @keyframes pulsate {
+        0% {
+          opacity: 0.5;
         }
-
-        .note {
-            width: 700px;
-            height: 18px;
-            border-radius: 8px;
-            background-color: hsl(240, 4.8%, 95.9%);
-            animation: pulsate 1.5s ease-in-out infinite alternate;
+        100% {
+          opacity: 1;
         }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="editorjs" class="editorHolder">
+      <div class="notes-container" id="loadingSkeleton">
+        <div class="note"></div>
+        <div class="note"></div>
+        <div class="note"></div>
+      </div>
+    </div>
+    <script>
+      const CONVEX_URL = "https://fantastic-alligator-877.convex.cloud";
+      const convexClient = new convex.ConvexClient(CONVEX_URL);
+      let editor = null;
+        let currentDocumentId = null; // Define a variable to store the current documentId
+        const loadingSkeleton = document.getElementById("loadingSkeleton");
+        loadingSkeleton.style.display = "flex";
+        window.addEventListener("message", function (event) {
+          // Make the event listener async
+          const documentId = event.data["documentId"];
+          console.log("message", documentId);
+          convexClient
+            .query("documents:getEditor", { id: documentId })
+            .then((documents) => {
+              const content = documents[0].content;
 
-        @keyframes pulsate {
-            0% {
-                opacity: 0.5;
-            }
-            100% {
-                opacity: 1;
-            }
-        }
-  </style>
-</head>
-<body>
-  <div id="editorjs" class="editorHolder">
-    <div class="notes-container" id="loadingSkeleton">
-      <div class="note"></div>
-      <div class="note"></div>
-      <div class="note"></div>
-  </div>
-  </div>
-  <script>
-    const CONVEX_URL = "https://fantastic-alligator-877.convex.cloud";
-    const convexClient = new convex.ConvexClient(CONVEX_URL);
-    let editor = null;
-      let currentDocumentId = null; // Define a variable to store the current documentId
-      const loadingSkeleton = document.getElementById("loadingSkeleton");
-      loadingSkeleton.style.display = "flex";
-      window.addEventListener("message", function (event) {
-        // Make the event listener async
-        const documentId = event.data["documentId"];
-        console.log("message", documentId);
-        convexClient
-          .query("documents:getEditor", { id: documentId })
-          .then((documents) => {
-            const content = documents[0].content;
+              const parsedContent = content ? JSON.parse(content) : {};
 
-            const parsedContent = content ? JSON.parse(content) : {};
-
-            if (!editor) {
-              createEditor(parsedContent, documentId);
-              loadingSkeleton.style.display = "none";
-            }
-          });
-      });
-
-      async function createEditor(content, documentId) {
-        // Define an async function to create the editor
-        editor = await new EditorJS({
-          // Await the creation of the editor
-          holder: "editorjs",
-          autofocus: true,
-          onChange: () => {
-            saveEditorData(); // Call saveEditorData without arguments
-          },
-          tools: {
-            header: { class: Header },
-            list: { class: List },
-            table: {
-              class: Table,
-              inlineToolbar: true,
-              config: { rows: 3, cols: 3 },
-            },
-            embed: { class: Embed },
-            inlineCode: { class: InlineCode },
-            checklist: { class: Checklist },
-            marker: { class: Marker },
-            quote: { class: Quote },
-            simpleImage: { class: SimpleImage },
-            delimiter: { class: Delimiter },
-            warning: { class: Warning },
-            image: { class: Image },
-          },
-          data: content,
+              if (!editor) {
+                createEditor(parsedContent, documentId);
+                loadingSkeleton.style.display = "none";
+              }
+            });
         });
-        currentDocumentId = documentId; // Store the current documentId
-      }
 
-      async function saveEditorData() {
-        const data = await editor.save(); // Await the saving of the editor data
-        const editorContent = JSON.stringify(data);
-        console.log("Saved data:", editorContent);
-        console.log(typeof editorContent);
-        convexClient.mutation(
-          "documents:saveEditor",
-          { id: currentDocumentId, content: editorContent },
-          (documents) => {
-            console.log("task:", documents);
-          }
-        );
-      }
+        async function createEditor(content, documentId) {
+          // Define an async function to create the editor
+          editor = await new EditorJS({
+            // Await the creation of the editor
+            holder: "editorjs",
+            autofocus: true,
+            onChange: () => {
+              saveEditorData(); // Call saveEditorData without arguments
+            },
+            tools: {
+              header: { class: Header },
+              list: { class: List },
+              table: {
+                class: Table,
+                inlineToolbar: true,
+                config: { rows: 3, cols: 3 },
+              },
+              embed: { class: Embed },
+              inlineCode: { class: InlineCode },
+              checklist: { class: Checklist },
+              marker: { class: Marker },
+              quote: { class: Quote },
+              simpleImage: { class: SimpleImage },
+              delimiter: { class: Delimiter },
+              warning: { class: Warning },
+              image: { class: Image },
+            },
+            data: content,
+          });
+          currentDocumentId = documentId; // Store the current documentId
+        }
 
-  </script>
-</body>
+        async function saveEditorData() {
+          const data = await editor.save(); // Await the saving of the editor data
+          const editorContent = JSON.stringify(data);
+          console.log("Saved data:", editorContent);
+          console.log(typeof editorContent);
+          convexClient.mutation(
+            "documents:saveEditor",
+            { id: currentDocumentId, content: editorContent },
+            (documents) => {
+              console.log("task:", documents);
+            }
+          );
+        }
+    </script>
+    <script src="pdf.js"></script>
+  </body>
 </html>
