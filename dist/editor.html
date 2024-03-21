@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EditorJS Example</title>
+    <title class="pageTitle">EditorJS Example</title>
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
     <!-- Tools -->
     <!-- Header Tool -->
@@ -75,6 +75,13 @@
           opacity: 1;
         }
       }
+
+      .pageTitle {
+        padding-left: 20px;
+        font-size: larger;
+        font-weight: bold;
+        color: #737373;
+      }
     </style>
   </head>
   <body>
@@ -110,7 +117,8 @@
               }
             });
             convexClient.query("documents:get", { id: documentId } ).then((documents) => {
-              document.getElementById("editorNoteTitle").innerHTML = documents[0].title;
+              const title = document.querySelector("title");
+              title.innerText = documents[0].title;
             })
         });
 
