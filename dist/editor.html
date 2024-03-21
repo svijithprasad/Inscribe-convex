@@ -45,32 +45,38 @@
         width: 100%;
       }
 
-      .pulsate {
-      animation: pulse .5s infinite;
-    }
+      .notes-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
 
-    @keyframes pulse {
-      0% {
-        background-color: #f9fafb; /* Initial color */
-      }
-      50% {
-        background-color: #e5e7eb; /* Intermediate color */
-      }
-      100% {
-        background-color: #f9fafb; /* Final color */
-      }
-    }
+        .note {
+            width: 700px;
+            height: 18px;
+            border-radius: 8px;
+            background-color: hsl(240, 4.8%, 95.9%);
+            animation: pulsate 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulsate {
+            0% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
   </style>
 </head>
 <body>
-  <div id="editorjs" class="w-[100%] h-full absolute">
-    <div id="loadingSkeleton" class="hidden items-center justify-center">
-      <div class=" flex-col gap-2 w-[50%] h-full flex">
-        <div class="rounded-full bg-gray-200 pulsate animate-pulse h-4"></div>
-        <div class="rounded-full bg-gray-200 pulsate animate-pulse h-4"></div>
-        <div class="rounded-full bg-gray-200 pulsate animate-pulse h-4"></div>
-      </div>
-    </div>
+  <div id="editorjs" class="editorHolder">
+    <div class="notes-container" id="loadingSkeleton">
+      <div class="note"></div>
+      <div class="note"></div>
+      <div class="note"></div>
+  </div>
   </div>
   <script>
     const CONVEX_URL = "https://fantastic-alligator-877.convex.cloud";
@@ -78,8 +84,7 @@
     let editor = null;
       let currentDocumentId = null; // Define a variable to store the current documentId
       const loadingSkeleton = document.getElementById("loadingSkeleton");
-      loadingSkeleton.classList.remove("hidden");
-      loadingSkeleton.classList.add("flex");
+      loadingSkeleton.style.display = "flex";
       window.addEventListener("message", function (event) {
         // Make the event listener async
         const documentId = event.data["documentId"];
@@ -93,8 +98,7 @@
 
             if (!editor) {
               createEditor(parsedContent, documentId);
-              loadingSkeleton.classList.remove("flex");
-              loadingSkeleton.classList.add("hidden");
+              loadingSkeleton.style.display = "none";
             }
           });
       });
