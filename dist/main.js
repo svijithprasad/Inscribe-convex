@@ -152,16 +152,7 @@ const startClerk = async () => {
               const userspace = document.getElementById("user-space");
               const publishMenu = document.querySelector(".publish-Menu");
               publishMenu.style.display = "flex";
-              // Display skeleton loading animation
-              // notespace.innerHTML = `
-              //       <div class="flex flex-col p-3 gap-2">
-              //           <div class="skeleton h-52 w-full bg-[#666666] opacity-10"></div>
-              //           <div class="flex flex-col w-[800px] ml-[250px] gap-2">
-              //               <div class="skeleton h-4  bg-[#666666] opacity-10"></div>
-              //               <div class="skeleton h-4  bg-[#666666] opacity-10"></div>
-              //               <div class="skeleton h-4  bg-[#666666] opacity-10"></div>
-              //           </div>
-              //       </div>`;
+
 
               client
                 .query("documents:get", { id: documentId })
