@@ -397,6 +397,12 @@ const startClerk = async () => {
             <input class="title-input" type="text" id="note-title" data-id="${documents[0]._id}" value="${documents[0].title}">
         </div>
         <iframe src="editor.html" width="100%" height="100%" data-document-id="${documents[0]._id}"></iframe>`;
+        const iframe = document.querySelector("iframe");
+        iframe.addEventListener("load", function () {
+          const documentId = iframe.dataset.documentId;
+          console.log("iframe loaded");
+          iframe.contentWindow.postMessage({ documentId }, "*");
+        });
             const titleTextBox = document.getElementById("note-title");
             titleTextBox.value = documents[0].title;
             const documentId = titleTextBox.dataset.id;
@@ -416,64 +422,7 @@ const startClerk = async () => {
               }
             );
 
-            const editor = new EditorJS({
-              holder: "editorjs",
-              onChange: () => {
-                saveEditorData(documentId);
-              },
-
-              tools: {
-                header: {
-                  class: Header,
-                  inlineToolbar: true,
-                  config: {
-                    placeholder: "Enter a header",
-                    levels: [2, 3, 4],
-                    defaultLevel: 2,
-                  },
-                },
-                paragraph: {
-                  class: Paragraph,
-                  inlineToolbar: true,
-                },
-                list: {
-                  class: List,
-                  inlineToolbar: true,
-                  config: {
-                    ordered: true,
-                    unordered: true,
-                  },
-                },
-                table: {
-                  class: Table,
-                  inlineToolbar: true,
-                  config: {
-                    rows: 2,
-                    cols: 3,
-                  },
-                },
-                embed: {
-                  class: Embed,
-                  inlineToolbar: true,
-                },
-                inlineCode: {
-                  class: InlineCode,
-                  inlineToolbar: true,
-                },
-                checklist: {
-                  class: Checklist,
-                  inlineToolbar: true,
-                },
-                marker: {
-                  class: Marker,
-                  inlineToolbar: true,
-                },
-                image: {
-                  class: Image,
-                  inlineToolbar: true,
-                },
-              },
-            });
+            
 
             const publishBtn = document.getElementById("publishBtn");
             const publishTab = document.querySelector(".publish-tab");
