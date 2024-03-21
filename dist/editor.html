@@ -55,6 +55,10 @@
         gap: 5px;
       }
 
+      #editorNoteTitle{
+        display: none;
+      }
+
       .note {
         width: 700px;
         height: 18px;
@@ -74,6 +78,7 @@
     </style>
   </head>
   <body>
+    <div id="editorNoteTitle"></div>
     <div id="editorjs" class="editorHolder">
       <div class="notes-container" id="loadingSkeleton">
         <div class="note"></div>
@@ -104,6 +109,9 @@
                 loadingSkeleton.style.display = "none";
               }
             });
+            convexClient.query("documents:get", { id: documentId } ).then((documents) => {
+              document.getElementById("editorNoteTitle").innerHTML = documents[0].title;
+            })
         });
 
         async function createEditor(content, documentId) {
