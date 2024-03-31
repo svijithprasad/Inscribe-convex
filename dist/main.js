@@ -561,8 +561,6 @@ const startClerk = async () => {
     addBtn.addEventListener("click", createDocumentHandler);
     createNoteButton.addEventListener("click", createDocumentHandler);
 
-    const c
-
 
   } catch (err) {
     console.error("Error starting Clerk: ", err);
