@@ -76,11 +76,6 @@ function openDocument(documentId) {
       navTitle.innerHTML = `<p>${documents[0].title}</p>`;
       client.onUpdate("documents:get", { id: documentId }, (documents) => {
         const wallpaper = document.getElementById("note-wallpaper");
-        if (documents[0].coverImage !== undefined) {
-          wallpaper.innerHTML = `<img class="h-52 w-full" src="${documents[0].coverImage}"/>`;
-        } else {
-          wallpaper.innerHTML = "";
-        }
         const dynamicTitle = documents[0].title;
         navTitle.innerHTML = `<p>${dynamicTitle}</p>`;
       });
@@ -94,13 +89,6 @@ function openDocument(documentId) {
                 </div>`;
 
       notespace.innerHTML = `
-                  <div class="note-wallpaper" id="note-wallpaper">
-                  <span class="fileText"></span>
-              </div>
-
-              <div class="note-title group">
-                  <input class="title-input" type="text" id="note-title" data-id="${documents[0]._id}" value="${documents[0].title}">
-              </div>
               <iframe src="editor.html" width="100%" height="100%" data-document-id="${documents[0]._id}"></iframe>
               `;
 
@@ -126,7 +114,7 @@ function openDocument(documentId) {
       });
 
       // Initialize EditorJS inside the promise callback
-      initializeEditor(documentId);
+      // initializeEditor(documentId);
 
       const publishBtn = document.getElementById("publishBtn");
       const publishTab = document.querySelector(".publish-tab");

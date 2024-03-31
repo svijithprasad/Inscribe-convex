@@ -30,7 +30,7 @@ aside {
   overflow-y: hidden;
   position: fixed;
   display: flex;
-  width: 240px;
+  width: 250px;
   flex-direction: column;
   z-index: 99999;
   transition: opacity 0.3s ease;
@@ -649,7 +649,6 @@ aside {
   border-radius: 0.2rem;
   max-height: 350px;
   width: 300px;
-  display: flex;
   align-items: center;
   position: fixed;
   top: 350px;
@@ -692,6 +691,22 @@ aside {
 
 .trashDocuments:hover {
   background-color: rgba(114, 114, 114, 0.1);
+}
+
+.moreoptions{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 0.2rem;
+  cursor: pointer;
+  color: #737373;
+  margin-left: 10px;
+}
+
+.moreoptions:hover {
+  background-color: rgba(114, 114, 114, 0.3);
 }
 
 .deleteActions {
@@ -779,4 +794,78 @@ aside {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.moreoptionsBox{
+  background-color: white;
+  border-radius: 0.2rem;
+  max-height: 350px;
+  width: 250px;
+  align-items: center;
+  position: fixed;
+  top: 250px;
+  left: 260px;
+  z-index: 999999;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  flex-direction: column;
+  display: none;
+  border: rgba(114, 114, 114, 0.3) solid 1px;
+}
+
+.moreoptions.active{
+  background-color: rgba(114, 114, 114, 0.1);
+  color: black;
+}
+
+.childrenDocuments{
+  display: none;
+  flex-direction: column;
+  user-select: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#trashInput{
+  background-color: hsl(240, 4.8%, 95.9%);
+  border-radius: 5px;
+  padding-left: 10px;
+  color: hsl(240, 3.8%, 46.1%);
+}
+
+.user-box {
+  position: relative;
+  margin-top: 20px;
+}
+
+.user-box input {
+  width: 100%;
+  padding: 10px 0;
+  font-size: 16px;
+  color: #000000;
+  margin-bottom: 15px;
+  border: none;
+  border-bottom: 1px solid #737373;
+  outline: none;
+  background: transparent;
+}
+
+.user-box input:focus ~ label,
+.user-box input:valid ~ label {
+  top: -20px;
+  left: 0;
+  color: #69717d;
+  font-size: 12px;
+}
+
+.user-box label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px 0;
+  font-size: 16px;
+  color: #737373;
+  pointer-events: none;
+  transition: .2s;
 }

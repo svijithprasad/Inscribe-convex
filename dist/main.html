@@ -169,6 +169,24 @@
         </div>
         
         <div class="trash-templates">
+          <div class="item" onclick="">
+            <i
+              data-lucide="users"
+              height="18px"
+              width="18px"
+              style="color: #737373; margin-left: 13px"
+            ></i>
+            <p
+              style="
+                color: #737373;
+                font-size: 14px;
+                font-weight: 500;
+                margin-left: 8px;
+              "
+            >
+              Collab
+            </p>
+          </div>
           <div class="item" id="openTrash">
             <i
               data-lucide="trash"
@@ -246,8 +264,16 @@
 
 
       <div class="trashbox">
-        <h2>Trash Box</h2>
-        <div class="trashboxContent">
+        <div class="flex items-center gap-1 p-2 justify-evenly">
+          <i
+            data-lucide="search"
+            height="18px"
+            width="18px"
+            style="color: #737373; margin-left: 13px"
+          ></i>
+          <input type="text" class="w-[80%] outline-none" placeholder="Search here..." id="trashInput">
+        </div>
+        <div class="trashboxContent" id="trashboxContent">
         </div>
       </div>
       <div class="mainBar">
@@ -294,10 +320,7 @@
           </div>
         </div>
 
-        <div class="iconAndCover" style="display:none; position: absolute; left: 25%; top: 75px; opacity: 0.65; z-index: 50;">
-          <div class="btn btn-ghost btn-sm mr-3  hover:bg-secondary border-border dark:hover:bg-secondary-dark dark:border-border-dark"><span class="text-xs flex items-center"><i data-lucide="smile" class="w-4 h-4"></i>&nbsp; Add Icon</span></div>
-          <div onclick="my_modal_5.showModal()" class="coverImg btn btn-ghost btn-sm mr-3  hover:bg-secondary border-border dark:hover:bg-secondary-dark dark:border-border-dark"><span class="text-xs flex items-center"><i data-lucide="image" class="w-4 h-4"></i>&nbsp; Cover Image</span></div>
-      </div>
+
         <div class="note-space" id="note-space">
 
         </div>
@@ -407,22 +430,28 @@
           </dialog>
         </div>
 
-        <div class="coverImgModal">
-          <dialog id="my_modal_5" class="modal">
+
+        <div class="moreoptionsBox" id="moreoptionsBox"></div>
+
+        <!-- <div class="collabModal">
+          <dialog id="my_modal_10" class="modal rounded-sm">
             <div class="modal-box bg-primary-dark border border-border">
               <form method="dialog">
                 <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 closeModalBtn">✕</button>
               </form>
-              <h2 class="font-bold text-sm text-center text-primary">Choose how you want to add the cover image</h2>
-
-              <div class="border-t border-gray-300 my-4"></div>
-              <div class="p-8">
-
-
+              <h3 class="font-bold text-lg">Create a group</h3>
+              <div class="user-box">
+                <input type="text" name="" required="" id="collabEmail">
+                <label>Email</label>
               </div>
+              <div class="user-box border-border mb-4">
+                <textarea type="text" name="" placeholder="Description" cols="41" draggable="false"></textarea>
+              </div>
+              <button class="btn btn-primary" id="createGroup">Invite</button>
             </div>
           </dialog>
-        </div>
+        </div> -->
+
       </div>
     </main>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -449,5 +478,7 @@
 <script src="searchDocs.js"></script>
 <script src="settings.js"></script>
 <script src="unsplashAPI.js"></script>
+<script src="nested.js"></script>
+<!-- <script src="searchArchiveDocs.js"></script> -->
   </body>
 </html>

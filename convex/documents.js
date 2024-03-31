@@ -37,6 +37,7 @@ export const create = mutation({
     userId: v.string(),
     isArchived: v.boolean(),
     isPublished: v.boolean(),
+    parentDocument: v.optional(v.id("documents")),
   },
   handler: async (ctx, args) => {
     // Check if args.title is unset or falsy, and assign "Untitled" if so
@@ -48,6 +49,7 @@ export const create = mutation({
       isArchived: args.isArchived,
       isPublished: args.isPublished,
       isCompleted: args.isCompleted,
+      parentDocument: args.parentDocument,
     });
     return document;
   },
@@ -83,7 +85,6 @@ export const getArchived = query({
     const documents = await ctx.db
       .query("documents")
       .filter((q) => q.eq(q.field("userId"), args.userId))
-      .filter((q) => q.eq(q.field("parentDocument"), args.parentDocument))
       .filter((q) => q.eq(q.field("isArchived"), true))
       .collect();
 
@@ -170,4 +171,21 @@ export const searchDocs = query({
       .collect();
     return documents;
   }
+})
+
+
+export const getChildrens = query({
+  args: {
+    parentDocument: v.id("documents"),
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const documents = await ctx.db
+      .query("documents")
+      .filter((q) => q.eq(q.field("userId"), args.userId))
+      .filter((q) => q.eq(q.field("parentDocument"), args.parentDocument))
+      .filter((q) => q.eq(q.field("isArchived"), false))
+      .collect();
+    return documents;
+  },
 })

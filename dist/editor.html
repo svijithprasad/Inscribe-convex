@@ -11,7 +11,7 @@
     <!-- List Tool -->
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
     <!-- Paragraph Tool -->
-    <script src="https://cdn.jsdelivr.net/npm/@editorjs/paragraph@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editorjs-paragraph-with-alignment@3.0.0"></script>
     <!-- Table Tool -->
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/table@2.3.0/dist/table.umd.min.js"></script>
     <!-- Embed Tool -->
@@ -29,12 +29,33 @@
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/warning@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/link@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/image@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/attaches@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/underline@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/link-autocomplete"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editorjs-style@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editorjs-tooltip"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editorjs-text-alignment-blocktune@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editorjs-indent-tune/dist/bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editorjs-drag-drop"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/nested-list@1.4.2/dist/nested-list.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editorjs-header-with-alignment@1.0.1/dist/bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editorjs-toggle-block"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@alkhipce/editorjs-aitext@1.0.3/dist/aitext.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@calumk/editorjs-nested-checklist@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/simple-image@1.6.0/dist/simple-image.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/editorjs-inline-image"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@medistream/editorjs-text-color-plugin@1.14.2/dist/bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@quanzo/change-font-size@1.0.0/dist/editor.change-font-size.min.js"></script>
     <script
       src="https://code.jquery.com/jquery-3.7.1.min.js"
       integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
       crossorigin="anonymous"
     ></script>
     <script src="https://unpkg.com/convex@1.3.1/dist/browser.bundle.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/themes/light.css"
+    />
 
     <style>
       * {
@@ -55,12 +76,12 @@
         gap: 5px;
       }
 
-      #editorNoteTitle{
+      #editorNoteTitle {
         display: none;
       }
 
       .note {
-        width: 700px;
+        width: 1000px;
         height: 18px;
         border-radius: 8px;
         background-color: hsl(240, 4.8%, 95.9%);
@@ -82,92 +103,297 @@
         font-weight: bold;
         color: #737373;
       }
+      .notelg {
+        width: 90%;
+        height: 200px;
+        border-radius: 8px;
+        background-color: hsl(240, 4.8%, 95.9%);
+        animation: pulsate 1.5s ease-in-out infinite alternate;
+      }
+      .notemd {
+        width: 150px;
+        height: 28px;
+        border-radius: 8px;
+        background-color: hsl(240, 4.8%, 95.9%);
+        animation: pulsate 1.5s ease-in-out infinite alternate;
+      }
+      .notemdBox {
+        display: flex;
+        width: 1000px;
+      }
+      .title-input {
+        font-size: 42px;
+        font-weight: 600;
+        border: none;
+        outline: none;
+        background-color: transparent;
+        color: #3f3f3f;
+        cursor: pointer;
+        padding-left: 320px;
+        padding-top: 50px;
+      }
+      .codex-editor:focus {
+        outline: none;
+        border: none;
+      }
+      .title-input:focus {
+        border: none;
+        outline: none;
+        background-color: transparent;
+      }
+
+      #editor:focus {
+        outline: none;
+        border: none;
+        background-color: transparent;
+      }
+
+      .coverImgModal {
+        display: none;
+      }
+
+      sl-button {
+        display: none;
+        gap: 5px;
+        position: absolute;
+        top: 5px;
+        left: 25%;
+      }
     </style>
   </head>
   <body>
-    <div id="editorNoteTitle"></div>
+    <div class="wallpaperIconCoverHolder"></div>
+
     <div id="editorjs" class="editorHolder">
       <div class="notes-container" id="loadingSkeleton">
+        <div class="notelg"></div>
+        <div class="notemdBox">
+          <div class="notemd"></div>
+        </div>
         <div class="note"></div>
         <div class="note"></div>
         <div class="note"></div>
       </div>
     </div>
+
+    <script>
+      const dialog = document.querySelector(".dialog-overview");
+      const openButton = dialog.nextElementSibling;
+      const closeButton = dialog.querySelector('sl-button[slot="footer"]');
+
+      openButton.addEventListener("click", () => dialog.show());
+      closeButton.addEventListener("click", () => dialog.hide());
+    </script>
+
     <script>
       const CONVEX_URL = "https://fantastic-alligator-877.convex.cloud";
       const convexClient = new convex.ConvexClient(CONVEX_URL);
       let editor = null;
-        let currentDocumentId = null; // Define a variable to store the current documentId
-        const loadingSkeleton = document.getElementById("loadingSkeleton");
-        loadingSkeleton.style.display = "flex";
-        window.addEventListener("message", function (event) {
-          // Make the event listener async
-          const documentId = event.data["documentId"];
-          console.log("message", documentId);
-          convexClient
-            .query("documents:getEditor", { id: documentId })
-            .then((documents) => {
-              const content = documents[0].content;
+      let currentDocumentId = null; // Define a variable to store the current documentId
+      const loadingSkeleton = document.getElementById("loadingSkeleton");
+      loadingSkeleton.style.display = "flex";
+      window.addEventListener("message", function (event) {
+        // Make the event listener async
+        const documentId = event.data["documentId"];
+        console.log("message", documentId);
+        convexClient
+          .query("documents:getEditor", { id: documentId })
+          .then((documents) => {
+            const content = documents[0].content;
 
-              const parsedContent = content ? JSON.parse(content) : {};
+            const parsedContent = content ? JSON.parse(content) : {};
 
-              if (!editor) {
-                createEditor(parsedContent, documentId);
-                loadingSkeleton.style.display = "none";
-              }
-            });
-            convexClient.query("documents:get", { id: documentId } ).then((documents) => {
-              const title = document.querySelector("title");
-              title.innerText = documents[0].title;
-            })
-        });
-
-        async function createEditor(content, documentId) {
-          // Define an async function to create the editor
-          editor = await new EditorJS({
-            // Await the creation of the editor
-            holder: "editorjs",
-            autofocus: true,
-            onChange: () => {
-              saveEditorData(); // Call saveEditorData without arguments
-            },
-            tools: {
-              header: { class: Header },
-              list: { class: List },
-              table: {
-                class: Table,
-                inlineToolbar: true,
-                config: { rows: 3, cols: 3 },
-              },
-              embed: { class: Embed },
-              inlineCode: { class: InlineCode },
-              checklist: { class: Checklist },
-              marker: { class: Marker },
-              quote: { class: Quote },
-              simpleImage: { class: SimpleImage },
-              delimiter: { class: Delimiter },
-              warning: { class: Warning },
-              image: { class: Image },
-            },
-            data: content,
-          });
-          currentDocumentId = documentId; // Store the current documentId
-        }
-
-        async function saveEditorData() {
-          const data = await editor.save(); // Await the saving of the editor data
-          const editorContent = JSON.stringify(data);
-          console.log("Saved data:", editorContent);
-          console.log(typeof editorContent);
-          convexClient.mutation(
-            "documents:saveEditor",
-            { id: currentDocumentId, content: editorContent },
-            (documents) => {
-              console.log("task:", documents);
+            if (!editor) {
+              createEditor(parsedContent, documentId);
+              loadingSkeleton.style.display = "none";
             }
-          );
-        }
+          });
+        convexClient
+          .query("documents:get", { id: documentId })
+          .then((documents) => {
+            const title = document.querySelector("title");
+            title.innerText = documents[0].title;
+            const wallpaperIconCoverHolder = document.querySelector(
+              ".wallpaperIconCoverHolder"
+            );
+            wallpaperIconCoverHolder.style.display = "block";
+            wallpaperIconCoverHolder.innerHTML = ` <div class="note-wallpaper" id="note-wallpaper">
+          <span class="fileText"></span>
+      </div>
+
+      <div class="note-title group">
+          <input class="title-input" type="text" id="note-title" data-id="${documents[0]._id}" value="${documents[0].title}">
+      </div>`;
+
+            const titleTextBox = document.getElementById("note-title");
+            titleTextBox.addEventListener("input", function () {
+              const titleValue = titleTextBox.value.trim(); // Trim whitespace
+
+              // If titleValue is empty, set it to "Untitled", otherwise use the current value
+              const titleToSend = titleValue ? titleValue : "Untitled";
+
+              convexClient.mutation(
+                "documents:renameTitle",
+                { id: documentId, title: titleToSend },
+                (documents) => {
+                  console.log("task:", documents);
+                }
+              );
+            });
+          });
+      });
+
+      async function createEditor(content, documentId) {
+        // Define an async function to create the editor
+        editor = await new EditorJS({
+          onReady: () => {
+            new DragDrop(editor);
+          },
+          inlineToolbar: true,
+          // Await the creation of the editor
+          holder: "editorjs",
+          autofocus: true,
+          placeholder: "Type something... Press / for commands",
+          onChange: () => {
+            saveEditorData();
+          },
+          tools: {
+            header: {
+              class: Header,
+              config: {
+                placeholder: "Enter a header",
+                levels: [1, 2, 3, 4, 5, 6],
+                defaultLevel: 2,
+                defaultAlignment: "left",
+              },
+            },
+            paragraph: {
+              class: Paragraph,
+              inlineToolbar: true,
+            },
+            list: {
+              class: NestedList,
+              inlineToolbar: true,
+              config: {
+                defaultStyle: "unordered",
+              },
+            },
+            table: {
+              class: Table,
+              inlineToolbar: true,
+              config: { rows: 3, cols: 3 },
+            },
+            embed: { class: Embed },
+            inlineCode: { class: InlineCode },
+            checklist: { class: Checklist },
+            marker: { class: Marker },
+            quote: { class: Quote },
+            image: {
+              class: InlineImage,
+              inlineToolbar: true,
+              config: {
+                embed: {
+                  display: true,
+                },
+                unsplash: {
+                  appName: "Inscribe",
+                  apiUrl: "https://api.unsplash.com",
+                  maxResults: 30,
+                },
+              },
+            },
+            delimiter: { class: Delimiter },
+            warning: { class: Warning },
+            attaches: { class: AttachesTool },
+            underline: Underline,
+            tooltip: {
+              class: Tooltip,
+              config: {
+                location: "left",
+                underline: true,
+                placeholder: "Enter a tooltip",
+                highlightColor: "#FFEFD5",
+                backgroundColor: "#154360",
+                textColor: "#FDFEFE",
+                holder: "editorId",
+              },
+            },
+
+            align: {
+              class: AlignmentBlockTune,
+              config: {
+                default: "right",
+                blocks: {
+                  header: "center",
+                  list: "right",
+                },
+              },
+            },
+            toggle: {
+              class: ToggleBlock,
+              inlineToolbar: true,
+            },
+            link: {
+              class: LinkAutocomplete,
+              config: {
+                endpoint: "http://127.0.0.1:5501/",
+                queryParam: "search",
+              },
+            },
+            aiText: {
+              // if you do not use TypeScript you need to remove "as unknown as ToolConstructable" construction
+              class: AIText,
+              config: {
+                openaiKey:
+                  "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",
+                placeholder: "Enter a text",
+              },
+            },
+            Color: {
+              class: window.ColorPlugin, // if load from CDN, please try: window.ColorPlugin
+              config: {
+                colorCollections: [
+                  "#EC7878",
+                  "#9C27B0",
+                  "#673AB7",
+                  "#3F51B5",
+                  "#0070FF",
+                  "#03A9F4",
+                  "#00BCD4",
+                  "#4CAF50",
+                  "#8BC34A",
+                  "#CDDC39",
+                  "#FFF",
+                ],
+                defaultColor: "#FF1300",
+                type: "text",
+                placeholder: "Enter a color",
+              },
+            },
+          },
+          data: content,
+        });
+        currentDocumentId = documentId; // Store the current documentId
+      }
+
+      async function saveEditorData() {
+        const data = await editor.save(); // Await the saving of the editor data
+        const editorContent = JSON.stringify(data);
+        console.log("Saved data:", editorContent);
+        console.log(typeof editorContent);
+        convexClient.mutation(
+          "documents:saveEditor",
+          { id: currentDocumentId, content: editorContent },
+          (documents) => {
+            console.log("task:", documents);
+          }
+        );
+      }
     </script>
     <script src="pdf.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+      lucide.createIcons();
+    </script>
   </body>
 </html>

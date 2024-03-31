@@ -81,78 +81,258 @@ const startClerk = async () => {
 
       const sidebarContainer = document.getElementById("titles-list");
       sidebarContainer.innerHTML = `<div class="flex flex-col p-3 gap-2">
-      <div class="skeleton h-4 w-full bg-[#666666] opacity-10"></div>
-      <div class="skeleton h-4 w-full bg-[#666666] opacity-10"></div>
-      <div class="skeleton h-4 w-full bg-[#666666] opacity-10"></div>
+      <div class="flex items-center gap-1"><div class="skeleton w-3 h-3 rounded-medium shrink-0 bg-[#666666] opacity-10"></div><div class="skeleton w-[70%] h-3 rounded-full shrink-0 bg-[#666666] opacity-10"></div></div>
+      <div class="flex items-center gap-1"><div class="skeleton w-3 h-3 rounded-medium shrink-0 bg-[#666666] opacity-10"></div><div class="skeleton w-[70%] h-3 rounded-full shrink-0 bg-[#666666] opacity-10"></div></div>
+      <div class="flex items-center gap-1"><div class="skeleton w-3 h-3 rounded-medium shrink-0 bg-[#666666] opacity-10"></div><div class="skeleton w-[70%] h-3 rounded-full shrink-0 bg-[#666666] opacity-10"></div></div>
     </div>`;
-      client.onUpdate(
-        "documents:getSidebar",
-        { userId: userId },
-        (documents) => {
-          // Clear existing content
-          if (!documents.length == 0) {
-            sidebarContainer.innerHTML = "";
-            for (let i = 0; i < documents.length; i++) {
-              const document = documents[i];
-              const isActive = i === 0 ? "active" : "";
 
-              sidebarContainer.innerHTML += `
-                <div class='document-title' data-document-id="${document._id}">
-                <div class='titleContainer'>
-                    <div class="expand"><i class='fa-solid fa-chevron-right fa-xs'></i></div>
-                    <div class='title text-sm truncate'>${document.title}</div>
-                </div>
-                    <div class='actionItems'>
-                        <div class='delete-document moreoptions' data-document-id='${document._id}'><i class='fa-solid fa-trash fa-xs'></i></div>
-                        <div class='add-child' data-document-id='${document._id}'><i class='fa-solid fa-plus fa-sm'></i></div>
-                    </div>
-                </div>
-            `;
-            }
+      // Define renderDocuments function outside of the client.onUpdate callback
+      function renderDocuments(documents, parentElement, level = 0) {
+        // Clear existing content
+        parentElement.innerHTML = "";
+
+        documents.forEach((documentDetails) => {
+          let indent = 0;
+          if (level == 0) {
+            indent = 14;
+          } else if (level == 1) {
+            indent = level * 30;
           } else {
-            sidebarContainer.innerHTML = `<div class="flex items-center min-h-7 pl-4 font-normal text-sm text-black "><p>No document created!</p></div>`;
+            indent = level * 24;
           }
+          const { _id, title } = documentDetails;
 
-          document.addEventListener("DOMContentLoaded", function () {
-            var titlesListDiv = document.getElementById("titles-list");
-            var noDocumentDiv = titlesListDiv.querySelector(".no-document");
-            if (
-              titlesListDiv.children.length === 1 &&
-              titlesListDiv.firstElementChild === noDocumentDiv
-            ) {
-              noDocumentDiv.style.display = "block";
-            } else {
-              noDocumentDiv.style.display = "none";
-            }
-          });
+          const documentHTML = `
+      <div class='document-title' data-document-id="${_id}" style="padding-left: ${indent}px;">
+        <div class='titleContainer'>
+          <div class="expand" data-document-id="${_id}">
+            <i class='fa-solid fa-chevron-right fa-xs'></i>
+          </div>
+          <div class='title text-sm truncate'>${title}</div>
+        </div>
+        <div class='actionItems'>
+          <div class='moreoptions' data-document-id='${_id}'>
+            <i class="fa-solid fa-ellipsis"></i>
+          </div>
+          <div class='add-child' data-document-id='${_id}'>
+            <i class='fa-solid fa-plus fa-sm'></i>
+          </div>
+        </div>
+      </div>
+      <div class="childrenDocuments" style="display: none;"></div>
+    `;
 
-          // Select all document titles
-          const documentTitles = document.querySelectorAll(".document-title");
+          // Append HTML to parentElement
+          parentElement.innerHTML += documentHTML;
 
-          // Add click event listener to each document title
-          documentTitles.forEach((title) => {
-            title.addEventListener("click", function (event) {
+          // Add event listener for adding child
+          const addChildButton = parentElement.querySelectorAll(`.add-child`);
+          addChildButton.forEach((button) => {
+            button.addEventListener("click", function (event) {
               event.stopPropagation();
-              // Remove "active" class from all document titles
-              documentTitles.forEach((t) => {
-                t.classList.remove("active");
-              });
-
-              // Add "active" class to the clicked document title
-              title.classList.add("active");
+              const documentId = button.dataset.documentId;
+              client.mutation(
+                "documents:create",
+                {
+                  title: "Untitled",
+                  userId: userId,
+                  isArchived: false,
+                  isPublished: false,
+                  parentDocument: documentId,
+                },
+                (documents) => {
+                  // Find the closest expand button and trigger a click event on it
+                  const expandButton = button
+                    .closest(".document-title")
+                    .querySelector(".expand");
+                  if (expandButton) {
+                    expandButton.click(); // Simulate click on the expand button
+                  }
+                }
+              );
             });
           });
 
-          documentTitles.forEach((title) => {
-            const navTitle = document.getElementById("navTitle");
-            title.addEventListener("click", function (event) {
+          // Add event listener for expanding
+          const expandButton = parentElement.querySelectorAll(`.expand`);
+          expandButton.forEach((expButton) => {
+            expButton.addEventListener("click", function (event) {
               event.stopPropagation();
-              const documentId = title.dataset.documentId;
+              const chevronIcon = expButton.querySelector("i");
+              const childrenDocuments =
+                expButton.closest(".document-title").nextElementSibling;
+              const documentId = expButton.dataset.documentId;
+
+              chevronIcon.classList.toggle("fa-chevron-right");
+              chevronIcon.classList.toggle("fa-chevron-down");
+
+              if (chevronIcon.classList.contains("fa-chevron-right")) {
+                const isExpanded = false;
+                childrenDocuments.style.display = "none";
+              } else if (chevronIcon.classList.contains("fa-chevron-down")) {
+                const isExpanded = true;
+                childrenDocuments.innerHTML = `
+                <div class="flex items-center gap-1"><div style="padding-left="${indent}px" class="skeleton w-3 h-3 rounded-medium shrink-0 bg-[#666666] opacity-10"></div><div class="skeleton w-[70%] h-3 rounded-full shrink-0 bg-[#666666] opacity-10"></div></div> 
+                `;
+                childrenDocuments.style.display = "flex";
+
+                client.onUpdate(
+                  "documents:getChildrens",
+                  { parentDocument: documentId, userId: userId },
+                  (children) => {
+                    childrenDocuments.innerHTML = "";
+                    if (children.length == 0) {
+                      childrenDocuments.innerHTML = `<div class="flex items-center min-h-7 pl-4 font-normal text-sm text-muted-foreground" style="padding-left: ${indent}px;"><p>no documents found!</p></div>`;
+                    } else {
+                      renderDocuments(children, childrenDocuments, level + 1);
+                    }
+                  }
+                );
+              }
+            });
+          });
+
+          // Add event listener for more options
+          const moreOptionsButtons =
+            parentElement.querySelectorAll(".moreoptions");
+          const modal6 = document.getElementById("moreoptionsBox");
+          moreOptionsButtons.forEach((moreButton) => {
+            moreButton.addEventListener("click", function (event) {
+              // Your more options logic here
+              event.stopPropagation();
+              const documentId = moreButton.dataset.documentId;
+              console.log("More options clicked for document:", documentId);
+              const rect = moreButton.getBoundingClientRect(); // Get the position of the button
+              const scrollTop = window.pageYOffset || document.body.scrollTop; // Get the scroll top
+              const left = rect.left + window.pageXOffset; // Calculate the left position
+              const top = rect.bottom + scrollTop; // Calculate the top position
+              modal6.style.left = `${left}px`; // Set the left position of the modal
+              modal6.style.top = `${top - 20}px`; // Set the top position of the modal
+              moreButton.classList.add("active");
+              modal6.style.display = "flex";
+              function isClickInsideModal(event) {
+                return event.target === modal6 || modal6.contains(event.target);
+              }
+
+              // Event listener for clicks on the document
+              document.addEventListener("click", function (event) {
+                // Check if the click is outside the modal
+                const isOutsideModal = !isClickInsideModal(event);
+
+                // If it's outside the modal, hide the modal
+                if (isOutsideModal) {
+                  modal6.style.display = "none";
+                  moreButton.classList.remove("active");
+                }
+              });
+              modal6.innerHTML = `<div class="flex w-full h-full px-10 py-10 flex-col items-center justify-center">
+      <span class="loading loading-spinner loading-xs text-[#737373]"></span>
+      </div>`;
+              client.onUpdate(
+                "documents:get",
+                { id: documentId },
+                (documents) => {
+                  console.log("documents:", documents[0]._id);
+                  modal6.innerHTML = ` <div class="flex w-full h-full flex-col">
+      <div id="moreoptionsContent" class="w-full flex flex-col items-center justify-center p-1 select-none text-primary">
+
+        <div class="item p-2" id="">
+        <i class="fa-regular fa-copy"></i>
+          <p
+            style="
+              font-size: 14px;
+              font-weight: 500;
+              margin-left: 8px;
+            "
+          >
+            Duplicate
+          </p>
+        </div>
+
+        <div class="item p-2" id="delete-document" data-document-id="${documents[0]._id}">
+        <i class="fa-regular fa-trash-can"></i>
+          <p
+            style="
+              font-size: 14px;
+              font-weight: 500;
+              margin-left: 8px;
+            "
+          >
+            Delete
+          </p>
+        </div>
+      </div>
+      <div class="w-full flex flex-col items-center justify-center p-1 select-none text-primary">
+        <div class="border-t border-gray-300 w-full mt-1 mb-1"></div>
+          <div class="w-full h-8 p-2 flex items-center" id="lastEdited">
+
+            <p
+              style="
+                font-size: 14px;
+                font-weight: 500;
+                margin-left: 8px;
+              "
+            >
+
+            </p>
+          </div>
+      </div>
+    </div>`;
+                  const username = Clerk.user.firstName;
+                  const lastEdited = document.getElementById("lastEdited");
+                  const creationTime = documents[0]._creationTime;
+                  const date = new Date(creationTime);
+                  const formattedDate = date.toLocaleString();
+                  lastEdited.innerHTML = `<p
+        style="
+          font-size: 10px;
+          font-weight: 400;
+          margin-left: 8px;
+          color: #737373;
+        "
+      >
+        Last Edited by: ${username} <br>
+        Created on: ${formattedDate}
+      </p>`;
+                  const deleteDocumentButton =
+                    document.getElementById("delete-document");
+                  deleteDocumentButton.addEventListener(
+                    "click",
+                    function (event) {
+                      event.stopPropagation();
+                      const documentId =
+                        deleteDocumentButton.dataset.documentId;
+                      const notespace = document.getElementById("note-space");
+                      const userspace = document.getElementById("user-space");
+                      const navTitle = document.querySelector(".navTitle");
+                      const publishMenu =
+                        document.querySelector(".publish-Menu");
+                      publishMenu.style.display = "none";
+                      navTitle.style.display = "none";
+                      notespace.style.display = "none";
+                      userspace.style.display = "flex";
+                      deleteNote(documentId);
+                      modal6.style.display = "none";
+                      moreButton.classList.remove("active");
+                    }
+                  );
+                }
+              );
+            });
+          });
+
+          const documentTitleButtons =
+            document.querySelectorAll(".document-title");
+
+          documentTitleButtons.forEach((button) => {
+            button.addEventListener("click", function (event) {
+              const documentId = button.dataset.documentId;
+              localStorage.setItem("activeTitle", documentId);
+              event.stopPropagation();
               const notespace = document.getElementById("note-space");
               const userspace = document.getElementById("user-space");
               const publishMenu = document.querySelector(".publish-Menu");
               publishMenu.style.display = "flex";
-
 
               client
                 .query("documents:get", { id: documentId })
@@ -165,64 +345,22 @@ const startClerk = async () => {
                     "documents:get",
                     { id: documentId },
                     (documents) => {
-                      const wallpaper =
-                        document.getElementById("note-wallpaper");
-                      if (documents[0].coverImage !== undefined) {
-                        wallpaper.innerHTML = `<img class="h-52 w-full" src="${documents[0].coverImage}"/>`;
-                      } else {
-                        wallpaper.innerHTML = "";
-                      }
                       const dynamicTitle = documents[0].title;
                       navTitle.innerHTML = `<p>${dynamicTitle}</p>`;
                     }
                   );
                   publishMenu.innerHTML = "";
                   publishMenu.innerHTML += `
-                <div class="flex items-center fixed right-3 top-2">
-                  <div class="publish">
-                    <div id="publishBtn" class="btn btn-sm btn-ghost rounded-sm cursor-pointer" >Export <i class="fa-solid fa-globe"></i></div>
-                  </div>
-                  <div class="ml-2 btn btn-ghost btn-sm "><i class="fa-solid fa-ellipsis"></i></div>
-                </div>`;
+                  <div class="flex items-center fixed right-3 top-2">
+                    <div class="publish">
+                      <div id="publishBtn" class="btn btn-sm btn-ghost rounded-sm cursor-pointer" >Export <i class="fa-solid fa-globe"></i></div>
+                    </div>
+                    <div class="ml-2 btn btn-ghost btn-sm "><i class="fa-solid fa-ellipsis"></i></div>
+                  </div>`;
 
                   notespace.innerHTML = `
-                  <div class="note-wallpaper" id="note-wallpaper">
-                  <span class="fileText"></span>
-              </div>
-
-              <div class="note-title group">
-                  <input class="title-input" type="text" id="note-title" data-id="${documents[0]._id}" value="${documents[0].title}">
-              </div>
-              <iframe id="iframe" src="editor.html" width="100%" height="100%" data-document-id="${documents[0]._id}"></iframe>
-              `;
-
-                  const iconAndCover = document.querySelector(".iconAndCover");
-                  const notetitle = document.querySelector(".note-title");
-
-                  document.addEventListener("mouseover", function (event) {
-                    const isMouseOverNotetitle = notetitle.contains(
-                      event.target
-                    );
-                    const isMouseOverIconAndCover = iconAndCover.contains(
-                      event.target
-                    );
-
-                    if (!isMouseOverNotetitle && !isMouseOverIconAndCover) {
-                      iconAndCover.style.display = "none";
-                    } else {
-                      iconAndCover.style.display = "flex";
-                    }
-                  });
-
-                  const iframe = document.querySelector("iframe");
-                  iframe.addEventListener("load", function () {
-                    const documentId = iframe.dataset.documentId;
-                    console.log("iframe loaded");
-                    iframe.contentWindow.postMessage({ documentId }, "*");
-                  });
-
-                  // Initialize EditorJS inside the promise callback
-                  initializeEditor(documentId);
+                <iframe id="iframe" src="editor.html" width="100%" height="100%" data-document-id="${documents[0]._id}"></iframe>
+                `;
 
                   const publishBtn = document.getElementById("publishBtn");
                   const publishTab = document.querySelector(".publish-tab");
@@ -243,52 +381,46 @@ const startClerk = async () => {
                       }
                     });
                   });
-                })
 
-                .catch((error) => {
-                  console.error("Error retrieving document:", error);
-                  notespace.innerHTML = `<div>Error retrieving document</div>`;
+                  // const iframe = document.querySelector("iframe");
+                  iframe.addEventListener("load", function () {
+                    const documentId = iframe.dataset.documentId;
+                    console.log("iframe loaded");
+                    iframe.contentWindow.postMessage({ documentId }, "*");
+                  });
                 });
             });
           });
-
-          function initializeEditor(documentId) {
-            const titleTextBox = document.getElementById("note-title");
-            titleTextBox.addEventListener("input", function () {
-              const titleValue = titleTextBox.value.trim(); // Trim whitespace
-
-              // If titleValue is empty, set it to "Untitled", otherwise use the current value
-              const titleToSend = titleValue ? titleValue : "Untitled";
-
-              client.mutation(
-                "documents:renameTitle",
-                { id: documentId, title: titleToSend },
-                (documents) => {
-                  console.log("task:", documents);
-                }
-              );
-            });
+        });
+      }
+      // Usage:
+      client.onUpdate(
+        "documents:getSidebar",
+        { userId: userId },
+        (rootDocuments) => {
+          const sidebarContainer = document.getElementById("titles-list");
+          if (rootDocuments.length === 0) {
+            sidebarContainer.innerHTML = `<div class="flex items-center min-h-7 pl-4 font-normal text-sm text-black "><p>No document created!</p></div>`;
+          } else {
+            renderDocuments(rootDocuments, sidebarContainer);
           }
-
-          const deleteDocumentButtons =
-            document.querySelectorAll(".delete-document");
-          deleteDocumentButtons.forEach((button) => {
-            button.addEventListener("click", function (event) {
-              event.stopPropagation();
-              const documentId = button.dataset.documentId;
-              const notespace = document.getElementById("note-space");
-              const userspace = document.getElementById("user-space");
-              const navTitle = document.querySelector(".navTitle");
-              const publishMenu = document.querySelector(".publish-Menu");
-              publishMenu.style.display = "none";
-              navTitle.style.display = "none";
-              notespace.style.display = "none";
-              userspace.style.display = "flex";
-              deleteNote(documentId);
-            });
-          });
         }
       );
+
+      //expand code
+
+      document.addEventListener("DOMContentLoaded", function () {
+        var titlesListDiv = document.getElementById("titles-list");
+        var noDocumentDiv = titlesListDiv.querySelector(".no-document");
+        if (
+          titlesListDiv.children.length === 1 &&
+          titlesListDiv.firstElementChild === noDocumentDiv
+        ) {
+          noDocumentDiv.style.display = "block";
+        } else {
+          noDocumentDiv.style.display = "none";
+        }
+      });
 
       document.addEventListener("click", function (event) {
         const restoreButton = event.target.closest(".revert");
@@ -357,8 +489,8 @@ const startClerk = async () => {
     });
 
     const addBtn = document.getElementById("addDocument");
-
-    addBtn.addEventListener("click", async function (event) {
+    const createNoteButton = document.getElementById("createNoteButton");
+    async function createDocumentHandler(event) {
       event.stopPropagation();
       const userspace = document.getElementById("user-space");
       const notespace = document.getElementById("note-space");
@@ -391,32 +523,17 @@ const startClerk = async () => {
             notespace.innerHTML = "";
             notespace.innerHTML += `
         <iframe id="iframe" src="editor.html" width="100%" height="100%" data-document-id="${documents[0]._id}"></iframe>`;
-        const iframe = document.querySelector("iframe");
-        iframe.addEventListener("load", function () {
-          const documentId = iframe.dataset.documentId;
-          console.log("iframe loaded");
-          iframe.contentWindow.postMessage({ documentId }, "*");
-        });
-            const titleTextBox = document.getElementById("note-title");
-            titleTextBox.value = documents[0].title;
-            const documentId = titleTextBox.dataset.id;
-            titleTextBox.addEventListener("input", function () {
-              const documentId = titleTextBox.dataset.id;
-              client.mutation("documents:renameTitle", {
-                id: documentId,
-                title: titleTextBox.value,
-              });
+            const iframe = document.querySelector("iframe");
+            iframe.addEventListener("load", function () {
+              const documentId = iframe.dataset.documentId;
+              console.log("iframe loaded");
+              iframe.contentWindow.postMessage({ documentId }, "*");
             });
-            client.onUpdate(
-              "documents:get",
-              { id: documentId },
-              (documents) => {
-                const navTitle = document.getElementById("navTitle");
-                navTitle.innerHTML = `<p>${documents[0].title}</p>`;
-              }
-            );
-
-
+            const docId = iframe.dataset.documentId;
+            client.onUpdate("documents:get", { id: docId }, (documents) => {
+              const navTitle = document.getElementById("navTitle");
+              navTitle.innerHTML = `<p>${documents[0].title}</p>`;
+            });
 
             const publishBtn = document.getElementById("publishBtn");
             const publishTab = document.querySelector(".publish-tab");
@@ -437,27 +554,16 @@ const startClerk = async () => {
                 }
               });
             });
-            function saveEditorData(documentId) {
-              editor
-                .save()
-                .then((data) => {
-                  const content = JSON.stringify(data);
-                  console.log("Saved data:", content);
-                  client.mutation(
-                    "documents:saveEditor",
-                    { id: documentId, content: content },
-                    (documents) => {
-                      console.log("task:", documents);
-                    }
-                  );
-                })
-                .catch((error) => {
-                  console.error("Saving failed:", error);
-                });
-            }
           });
         });
-    });
+    }
+
+    addBtn.addEventListener("click", createDocumentHandler);
+    createNoteButton.addEventListener("click", createDocumentHandler);
+
+    const c
+
+
   } catch (err) {
     console.error("Error starting Clerk: ", err);
   }
@@ -525,4 +631,28 @@ document.addEventListener("DOMContentLoaded", function () {
       dropDown.classList.add("hidden");
     }
   });
+});
+
+function handleActiveTitle() {
+  const activeTitle = localStorage.getItem("activeTitle");
+  if (activeTitle) {
+    const documentTitles = document.querySelectorAll(".document-title");
+    // Iterate through each document title to find the one with the activeDocumentId
+    documentTitles.forEach((title) => {
+      if (title.dataset.documentId === activeTitle) {
+        // Remove "active" class from all document titles
+        documentTitles.forEach((t) => {
+          t.classList.remove("active");
+        });
+        // Add "active" class to the title with activeDocumentId
+        title.classList.add("active");
+      }
+    });
+  }
+}
+
+setInterval(handleActiveTitle, 1);
+
+window.addEventListener("load", function () {
+  localStorage.setItem("activeTitle", null);
 });
